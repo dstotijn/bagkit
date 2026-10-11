@@ -35,7 +35,7 @@ use std::{
     path::PathBuf,
     sync::{
         Condvar, Mutex,
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicU64, Ordering},
         mpsc::{SyncSender, sync_channel},
     },
     thread,
@@ -377,21 +377,23 @@ fn pipeline<T: Send>(
     let (documents_tx, documents_rx) = sync_channel::<(u64, Document)>(threads * 2);
     let documents_rx = Mutex::new(documents_rx);
     let (items_tx, items_rx) = sync_channel::<Batch<T>>(threads * 4);
-    let stop = AtomicBool::new(false);
+    // The first document that failed. Documents after it stop, while the ones before it
+    // finish, so the error reported is the earliest document's, whichever thread fails first.
+    let stop = AtomicU64::new(u64::MAX);
     // The next document the writer needs; workers wait rather than run too far ahead of it.
     let progress = Progress::default();
     let ahead = threads as u64 * 2;
     let (documents_rx, stop, progress) = (&documents_rx, &stop, &progress);
-    let halt = || {
-        stop.store(true, Ordering::Relaxed);
+    let halt = |number: u64| {
+        stop.fetch_min(number, Ordering::Relaxed);
         progress.advanced.notify_all();
     };
     thread::scope(|scope| {
-        let reader = scope.spawn(move || -> Result<()> {
+        let reader = scope.spawn(move || -> Result<(), (u64, anyhow::Error)> {
             let mut number = 0;
             for path in paths {
                 source::documents(path, select, &mut |document| {
-                    if stop.load(Ordering::Relaxed) {
+                    if stop.load(Ordering::Relaxed) != u64::MAX {
                         bail!(Stopped);
                     }
                     if !select(document.file_name()) {
@@ -401,28 +403,29 @@ fn pipeline<T: Send>(
                     number += 1;
                     Ok(())
                 })
-                .with_context(|| format!("importing {}", path.display()))?;
+                .with_context(|| format!("importing {}", path.display()))
+                .map_err(|error| (number, error))?;
             }
             Ok(())
         });
         let workers: Vec<_> = (0..threads)
             .map(|_| {
                 let items_tx = items_tx.clone();
-                scope.spawn(move || -> Result<ReadStats> {
+                scope.spawn(move || -> Result<ReadStats, (u64, anyhow::Error)> {
                     let mut stats = ReadStats::default();
                     loop {
                         let next = documents_rx.lock().unwrap().recv();
                         let Ok((number, document)) = next else { break };
                         progress.wait_until_within(number, ahead, stop);
-                        if stop.load(Ordering::Relaxed) {
-                            bail!(Stopped);
+                        if number > stop.load(Ordering::Relaxed) {
+                            return Err((number, Stopped.into()));
                         }
                         if let Err(error) = run(number, &document, work, &items_tx)
                             .map(|part| stats.add(part))
                             .with_context(|| format!("importing {}", document.name()))
                         {
-                            halt();
-                            return Err(error);
+                            halt(number);
+                            return Err((number, error));
                         }
                     }
                     Ok(stats)
@@ -430,7 +433,7 @@ fn pipeline<T: Send>(
             })
             .collect();
         drop(items_tx);
-        let mut write_error = None;
+        let mut first_error = None;
         let mut in_order = InOrder {
             write,
             next: 0,
@@ -439,8 +442,8 @@ fn pipeline<T: Send>(
         };
         for batch in items_rx.iter() {
             if let Err(error) = in_order.accept(batch) {
-                halt();
-                write_error = Some(error);
+                halt(in_order.next);
+                first_error = Some((in_order.next, error));
                 break;
             }
         }
@@ -448,7 +451,6 @@ fn pipeline<T: Send>(
         // Dropping the receiver unblocks workers waiting to send after a write error.
         drop(items_rx);
         let mut stats = ReadStats::default();
-        let mut first_error = write_error;
         for result in workers
             .into_iter()
             .map(|worker| worker.join().expect("import worker panicked"))
@@ -459,14 +461,19 @@ fn pipeline<T: Send>(
         {
             match result {
                 Ok(part) => stats.add(part),
-                Err(error) if error.is::<Stopped>() => (),
-                Err(error) => {
-                    first_error.get_or_insert(error);
+                Err((_, error)) if error.is::<Stopped>() => (),
+                Err((number, error)) => {
+                    if first_error
+                        .as_ref()
+                        .is_none_or(|(first, _)| number < *first)
+                    {
+                        first_error = Some((number, error));
+                    }
                 }
             }
         }
         match first_error {
-            Some(error) => Err(error),
+            Some((_, error)) => Err(error),
             None => {
                 ensure!(waiting == 0, "{waiting} documents were never written");
                 Ok(stats)
@@ -523,11 +530,12 @@ struct Progress {
 }
 
 impl Progress {
-    /// Blocks until document `number` is fewer than `ahead` documents past the writer, or the
-    /// import stops. The document the writer needs never waits, so this cannot deadlock.
-    fn wait_until_within(&self, number: u64, ahead: u64, stop: &AtomicBool) {
+    /// Blocks until document `number` is fewer than `ahead` documents past the writer, or a
+    /// document before it failed. The document the writer needs never waits, so this cannot
+    /// deadlock.
+    fn wait_until_within(&self, number: u64, ahead: u64, stop: &AtomicU64) {
         let mut next = self.next.lock().unwrap();
-        while number >= *next + ahead && !stop.load(Ordering::Relaxed) {
+        while number >= *next + ahead && number <= stop.load(Ordering::Relaxed) {
             next = self.advanced.wait(next).unwrap();
         }
     }
@@ -573,5 +581,39 @@ impl<T> InOrder<'_, '_, T> {
 
     fn write(&mut self, items: Vec<T>) -> Result<()> {
         items.into_iter().try_for_each(|item| (self.write)(item))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn reports_the_earliest_documents_error_whichever_fails_first() {
+        let dir = tempfile::tempdir().unwrap();
+        let paths: Vec<PathBuf> = ["a.xml", "b.xml"]
+            .iter()
+            .map(|name| {
+                let path = dir.path().join(name);
+                fs::write(&path, "<a/>").unwrap();
+                path
+            })
+            .collect();
+        // The later document fails at once; the earlier one only after it.
+        let work = |document: &Document, _: &mut dyn FnMut(()) -> Result<()>| {
+            if document.file_name() == "a.xml" {
+                thread::sleep(std::time::Duration::from_millis(100));
+                bail!("earlier document");
+            }
+            bail!("later document")
+        };
+        for _ in 0..5 {
+            let error = pipeline(&paths, 2, &|_| true, &work, &mut |()| Ok(())).unwrap_err();
+            assert!(
+                format!("{error:#}").contains("earlier document"),
+                "{error:#}"
+            );
+        }
     }
 }

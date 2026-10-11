@@ -13,7 +13,7 @@ The design and its trade-offs are recorded in [ADR-0006](https://github.com/dsto
 
 ## The pipeline
 
-One thread reads the inputs and copies each XML document out of its ZIP still compressed. Nested ZIPs are streamed: their entries are cut out of the inflating stream, so nothing is unpacked to disk. Worker threads, one per core by default, inflate, parse and convert documents into encoded rows. The calling thread writes the rows in document order, so each table receives its voorkomens in identificatie order, and the workers never run more than a few documents ahead of it, which keeps memory flat.
+One thread reads the inputs and copies each XML document out of its ZIP still compressed. Nested ZIPs are streamed: their entries are cut out of the inflating stream, so nothing is unpacked to disk. Worker threads, one per core by default, inflate, parse and convert documents into encoded rows. The calling thread writes the rows in document order, so each table receives its voorkomens in identificatie order, and the workers never run more than a few documents ahead of it, which keeps memory flat. When a document fails, the documents after it stop and the ones before it finish, so an import that fails reports the error of the earliest failing document, whichever thread finds its error first.
 
 ## Two parts
 

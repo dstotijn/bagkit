@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Dependency bumps change Cargo.toml, which the documentation check maps to pages.
+    labels: [dependencies, docs-not-needed]
     groups:
       cargo:
         update-types: [minor, patch]
@@ -12,6 +14,10 @@ updates:
     directory: /web
     schedule:
       interval: weekly
+    ignore:
+      # @astrojs/check accepts TypeScript 5 and 6 only.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     groups:
       npm:
         update-types: [minor, patch]

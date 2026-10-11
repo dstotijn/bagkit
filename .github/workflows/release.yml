@@ -7,6 +7,11 @@ on:
 permissions:
   contents: write
 
+env:
+  # Tools that `mise exec` installs call the GitHub API; unauthenticated calls share a small
+  # rate limit per runner IP, which macOS runners exhaust.
+  MISE_GITHUB_TOKEN: ${{ github.token }}
+
 jobs:
   build:
     strategy:

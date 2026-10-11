@@ -4,7 +4,7 @@ use crate::dataset::{Content, Encoded, Format, Table};
 use anyhow::{Context, Result, bail, ensure};
 use std::{
     collections::HashMap,
-    fs::{self, File},
+    fs::{self, File, OpenOptions},
     io::{BufWriter, Write},
     path::{Path, PathBuf},
 };
@@ -78,7 +78,12 @@ impl Destination {
     /// is briefly absent.
     pub fn publish_directory(&self, temp: tempfile::TempDir) -> Result<()> {
         for entry in fs::read_dir(temp.path())? {
-            File::open(entry?.path())?.sync_all()?;
+            // Windows flushes a file only through a handle that may write to it.
+            OpenOptions::new()
+                .write(cfg!(windows))
+                .read(true)
+                .open(entry?.path())?
+                .sync_all()?;
         }
         sync_directory(temp.path())?;
         let old = if self.path.exists() {
