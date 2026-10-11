@@ -603,19 +603,19 @@ impl<R: BufRead> Tokens for Streamed<R> {
         self.token.clear();
         let shape = match self.reader.read_event_into(&mut self.buffer)? {
             Event::Start(e) => {
-                self.token.extend_from_slice(&e);
+                self.token.extend_from_slice(e.as_bytes());
                 Shape::Start(e.name().as_ref().len())
             }
             Event::Text(e) => {
-                self.token.extend_from_slice(&e);
+                self.token.extend_from_slice(e.as_bytes());
                 Shape::Text
             }
             Event::CData(e) => {
-                self.token.extend_from_slice(&e);
+                self.token.extend_from_slice(e.as_bytes());
                 Shape::CData
             }
             Event::GeneralRef(e) => {
-                self.token.extend_from_slice(&e);
+                self.token.extend_from_slice(e.as_bytes());
                 Shape::Reference
             }
             Event::End(_) => return Ok(Token::End),
