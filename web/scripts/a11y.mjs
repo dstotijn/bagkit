@@ -26,6 +26,12 @@ const variants = [
 const unnamedCodeRegions = (violation) =>
 	violation.id === 'landmark-unique' &&
 	violation.nodes.every((n) => n.target.every((t) => t.includes('pre[role="region"]')));
+// Starlight's search button is named "Search" and shows that word, hidden from assistive
+// technology, beside its keyboard shortcut. axe 4.14 counts the shortcut keys as visible label
+// text missing from the name. Speaking "Search" still activates it, so the label is in the name.
+const searchShortcut = (violation) =>
+	violation.id === 'label-content-name-mismatch' &&
+	violation.nodes.every((n) => n.target.every((t) => t.includes('button[data-open-modal')));
 
 const types = {
 	'.html': 'text/html',
@@ -112,7 +118,9 @@ await Promise.all(
 					(await globalThis.axe.run(document, { runOnly: { type: 'tag', values } })).violations,
 				tags,
 			);
-			for (const v of violations.filter((found) => !unnamedCodeRegions(found))) {
+			for (const v of violations.filter(
+				(found) => !unnamedCodeRegions(found) && !searchShortcut(found),
+			)) {
 				const nodes = v.nodes.map(
 					(n) =>
 						`      ${n.target.join(' ')}\n        ${n.failureSummary.split('\n').slice(1).join(' ').trim()}`,
