@@ -34,7 +34,7 @@ hyper-util = { version = "0.1.21", features = ["tokio"], optional = true }
 memchr = "2.8.3"
 parquet = { version = "60.0.0", default-features = false, features = ["zstd"], optional = true }
 quick-xml = "0.38.4"
-rusqlite = { version = "0.37.0", features = ["bundled"], optional = true }
+rusqlite = { version = "0.40.2", features = ["bundled"], optional = true }
 serde_json = { version = "1.0.151", features = ["preserve_order", "float_roundtrip"] }
 tempfile = "3.27.0"
 tokio = { version = "1.53.2", features = ["net", "rt", "sync", "time"], optional = true }
