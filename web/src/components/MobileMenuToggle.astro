@@ -1,0 +1,85 @@
+---
+// Starlight's mobile menu button, as a plain text button: a two-line icon, a cross while the menu
+// is open, and the word "Menu", always shown, which also names the button.
+---
+
+<button
+	popovertarget="starlight__sidebar"
+	class="sl-menu-button sl-flex md:sl-hidden print:hidden"
+>
+	<svg class="open-menu" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+		<path d="M2 5.5h12M2 10.5h12" stroke="currentColor" stroke-width="1.5" fill="none"></path>
+	</svg>
+	<svg class="close-menu" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+		<path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5" fill="none"
+		></path>
+	</svg>
+	<span>{Astro.locals.t('menuButton.accessibleLabel')}</span>
+</button>
+
+<script>
+	// Starlight's sidebar is a popover only on narrow screens; on wide ones its script removes the
+	// popover so the sidebar shows beside the content. The landing page hides its sidebar on wide
+	// screens too, so there the popover is restored after Starlight's script, and after it resets
+	// it on a resize, for this button to open the sidebar as a panel.
+	if (document.documentElement.hasAttribute('data-has-hero')) {
+		customElements.whenDefined('sl-sidebar-pane').then(() => {
+			const pane = document.getElementById('starlight__sidebar');
+			if (!pane) return;
+			const restore = () => {
+				pane.popover = 'auto';
+			};
+			restore();
+			matchMedia('(min-width: 50em)').addEventListener('change', () => setTimeout(restore));
+		});
+	}
+</script>
+
+<style>
+	button {
+		position: fixed;
+		top: calc((var(--sl-nav-height) - var(--bk-menu-height)) / 2);
+		inset-inline-end: var(--sl-nav-pad-x);
+		z-index: var(--sl-z-index-navbar);
+		align-items: center;
+		gap: 0.5rem;
+		height: var(--bk-menu-height);
+		padding: 0 0.25rem;
+		border: 0;
+		background: transparent;
+		color: var(--sl-color-white);
+		font: inherit;
+		font-size: var(--sl-text-sm);
+		font-weight: 500;
+		cursor: pointer;
+	}
+
+	button:has(~ :popover-open) .open-menu,
+	button:not(:has(~ :popover-open)) .close-menu {
+		display: none;
+	}
+</style>
+
+<style is:global>
+	:root {
+		--bk-menu-height: 2rem;
+		/* The room the header keeps free for the button: icon, gap and the word. */
+		--bk-menu-width: 4.5rem;
+	}
+
+	@media (max-width: 49.99rem) {
+		:root[data-has-sidebar] header.header {
+			padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--bk-menu-width));
+		}
+	}
+
+	body:has(#starlight__sidebar:popover-open) {
+		overflow: hidden;
+	}
+
+	@media (min-width: 50rem) {
+		body:has(#starlight__sidebar:popover-open) {
+			overflow: auto;
+		}
+	}
+</style>

@@ -1,0 +1,544 @@
+/* A Mintlify-like look for Starlight: Inter, generous spacing, a green accent, a quiet
+   sidebar with pill-shaped active items, rounded cards, code blocks and callouts. */
+
+/* Inter 4.1 from its official release (public/fonts, SIL Open Font License). Fontsource's
+   builds leave out Inter's character variants, such as the single-storey a (cv11). */
+@font-face {
+	font-family: 'InterVariable';
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'InterVariable';
+	font-style: italic;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+:root {
+	--sl-font: 'InterVariable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--sl-font-mono:
+		'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--sl-nav-height: 4rem;
+	--sl-sidebar-width: 17.5rem;
+	--sl-content-width: 46rem;
+	--sl-text-h1: 2.25rem;
+	--sl-text-h2: 1.5rem;
+	--sl-text-h3: 1.25rem;
+	--sl-text-h4: 1.0625rem;
+	--sl-line-height-headings: 1.3;
+}
+
+/* Dark mode, the default. */
+:root {
+	--sl-color-accent-low: hsl(160, 55%, 13%);
+	--sl-color-accent: hsl(158, 64%, 46%);
+	--sl-color-accent-high: hsl(156, 70%, 70%);
+	--sl-color-white: hsl(220, 14%, 97%);
+	--sl-color-gray-1: hsl(220, 10%, 88%);
+	--sl-color-gray-2: hsl(220, 8%, 78%);
+	--sl-color-gray-3: hsl(220, 6%, 62%);
+	--sl-color-gray-4: hsl(220, 6%, 42%);
+	--sl-color-gray-5: hsl(220, 8%, 22%);
+	--sl-color-gray-6: hsl(220, 10%, 13%);
+	--sl-color-black: hsl(220, 13%, 6%);
+	--sl-color-bg-nav: color-mix(in srgb, var(--sl-color-black) 82%, transparent);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-hairline-light: hsl(220, 8%, 17%);
+	--sl-color-hairline: hsl(220, 9%, 13%);
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: hsl(158, 60%, 94%);
+	--sl-color-accent: hsl(162, 84%, 31%);
+	--sl-color-accent-high: hsl(163, 88%, 24%);
+	--sl-color-white: hsl(220, 16%, 7%);
+	--sl-color-gray-1: hsl(220, 12%, 16%);
+	--sl-color-gray-2: hsl(220, 8%, 26%);
+	--sl-color-gray-3: hsl(220, 6%, 42%);
+	--sl-color-gray-4: hsl(220, 6%, 60%);
+	--sl-color-gray-5: hsl(220, 10%, 86%);
+	--sl-color-gray-6: hsl(220, 16%, 95%);
+	--sl-color-gray-7: hsl(220, 20%, 97.5%);
+	--sl-color-black: hsl(0, 0%, 100%);
+	/* Starlight uses the accent itself, which is too light for small text on white. */
+	--sl-color-text-accent: var(--sl-color-accent-high);
+	--sl-color-bg-nav: color-mix(in srgb, var(--sl-color-black) 82%, transparent);
+	--sl-color-bg-sidebar: var(--sl-color-black);
+	--sl-color-hairline-light: hsl(220, 14%, 90%);
+	--sl-color-hairline: hsl(220, 14%, 92%);
+}
+
+body {
+	/* Inter's single-storey, round a. */
+	font-feature-settings: 'cv11';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Header: translucent, blurred, with a hairline, and the title as a bold Inter wordmark. */
+.site-title {
+	gap: 0.625rem;
+	font-size: 1.1875rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	color: var(--sl-color-white);
+}
+
+.site-title img {
+	height: 1.75rem;
+	width: 1.75rem;
+}
+
+header.header {
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+/* No hairline under the header on the landing page, which has a hero. */
+:root[data-has-hero] header.header {
+	border-bottom-color: transparent;
+}
+
+/* Search: a small field on the right, beside the other header controls, in the page colour. */
+.header > :has(> site-search) {
+	justify-content: flex-end;
+}
+
+@media (min-width: 50rem) {
+	site-search button[data-open-modal] {
+		width: 13rem;
+		height: 2.25rem;
+		border-radius: 0.625rem;
+		border-color: var(--sl-color-hairline-light);
+		background: var(--sl-color-black);
+		color: var(--sl-color-gray-3);
+	}
+
+	site-search button[data-open-modal]:hover {
+		border-color: var(--sl-color-gray-4);
+		background: var(--sl-color-black);
+	}
+}
+
+/* Sidebar: no divider, small group headings, pill-shaped links. */
+.sidebar-pane {
+	border-inline-end: 0;
+}
+
+.sidebar-content summary {
+	padding-inline: 0.75rem;
+	cursor: default;
+}
+
+.sidebar-content summary .large {
+	font-size: var(--sl-text-sm);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+.sidebar-content .caret {
+	display: none;
+}
+
+.sidebar-content .top-level > li + li {
+	margin-top: 1.5rem;
+}
+
+.sidebar-content ul ul {
+	margin-top: 0.375rem;
+}
+
+.sidebar-content ul ul li {
+	margin-inline-start: 0;
+	padding-inline-start: 0;
+	border-inline-start: 0;
+}
+
+.sidebar-content a {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+	border-radius: 0.625rem;
+	padding: 0.4rem 0.75rem;
+	transition:
+		color 0.12s ease,
+		background-color 0.12s ease;
+}
+
+.sidebar-content a:hover {
+	color: var(--sl-color-white);
+	background-color: var(--sl-color-gray-6);
+}
+
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover {
+	color: var(--sl-color-text-accent);
+	background-color: var(--sl-color-accent-low);
+	font-weight: 600;
+}
+
+/* Table of contents. */
+starlight-toc h2,
+mobile-starlight-toc h2 {
+	font-size: var(--sl-text-xs);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+starlight-toc a {
+	color: var(--sl-color-gray-3);
+}
+
+starlight-toc a:hover {
+	color: var(--sl-color-white);
+}
+
+starlight-toc a[aria-current='true'] {
+	color: var(--sl-color-text-accent);
+	font-weight: 500;
+}
+
+/* Content: no divider between the page title and the body. */
+.content-panel + .content-panel {
+	border-top: 0;
+}
+
+.content-panel:first-of-type {
+	padding-bottom: 0;
+}
+
+.sl-markdown-content {
+	color: var(--sl-color-gray-2);
+	line-height: 1.75;
+}
+
+.sl-markdown-content :is(h2, h3, h4) {
+	letter-spacing: -0.015em;
+	font-weight: 650;
+}
+
+.sl-markdown-content h2 {
+	margin-top: 2.5rem;
+}
+
+.sl-markdown-content a:not(.not-content a) {
+	color: var(--sl-color-white);
+	text-decoration-color: var(--sl-color-accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	font-weight: 500;
+}
+
+.sl-markdown-content a:not(.not-content a):hover {
+	text-decoration-thickness: 2px;
+}
+
+.sl-markdown-content :not(pre) > code {
+	padding: 0.15em 0.4em;
+	border-radius: 0.375rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	background: var(--sl-color-gray-6);
+	font-size: 0.875em;
+	/* Options such as --exclude stay on one line; put long commands in code blocks. */
+	white-space: nowrap;
+}
+
+/* In tables, long messages and values may wrap, so columns stay narrow. */
+.sl-markdown-content td :not(pre) > code,
+.sl-markdown-content td > code {
+	white-space: normal;
+	overflow-wrap: anywhere;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+
+/* Abbreviations (src/plugins/abbreviations.mjs): a dotted underline, and the expansion on hover. */
+.sl-markdown-content abbr[title] {
+	text-decoration: underline dotted;
+	text-decoration-color: var(--sl-color-gray-4);
+	text-underline-offset: 3px;
+	cursor: help;
+}
+
+/* Tables: hairlines only. The wrapper (see src/plugins) has the border and scrolls a wide
+   table sideways on a narrow screen. */
+.sl-markdown-content .table-scroll {
+	overflow-x: auto;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 0.75rem;
+}
+
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+	margin: 0;
+	border-collapse: separate;
+	border-spacing: 0;
+	font-size: var(--sl-text-sm);
+}
+
+.sl-markdown-content :is(th, td) {
+	border: 0;
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+	padding: 0.6rem 0.9rem;
+	vertical-align: top;
+}
+
+.sl-markdown-content tr:last-child td {
+	border-bottom: 0;
+}
+
+.sl-markdown-content th {
+	background: var(--sl-color-gray-6);
+	color: var(--sl-color-white);
+	font-weight: 600;
+}
+
+.sl-markdown-content tr:nth-child(2n) {
+	background: transparent;
+}
+
+/* Callouts: rounded, tinted, with a full border. */
+.starlight-aside {
+	border-radius: 0.875rem;
+	border: 1px solid;
+	padding: 1rem 1.125rem;
+}
+
+.starlight-aside--note {
+	border-color: color-mix(in srgb, var(--sl-color-blue) 35%, transparent);
+	background: color-mix(in srgb, var(--sl-color-blue) 8%, transparent);
+}
+
+.starlight-aside--tip {
+	border-color: color-mix(in srgb, var(--sl-color-accent) 40%, transparent);
+	background: color-mix(in srgb, var(--sl-color-accent) 8%, transparent);
+}
+
+.starlight-aside--caution {
+	border-color: color-mix(in srgb, var(--sl-color-orange) 40%, transparent);
+	background: color-mix(in srgb, var(--sl-color-orange) 8%, transparent);
+}
+
+.starlight-aside--danger {
+	border-color: color-mix(in srgb, var(--sl-color-red) 40%, transparent);
+	background: color-mix(in srgb, var(--sl-color-red) 8%, transparent);
+}
+
+.starlight-aside__title {
+	font-size: var(--sl-text-sm);
+}
+
+/* Starlight's own cards, steps and tabs in the same style. */
+.card {
+	border-radius: 1rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	background: transparent;
+	box-shadow: none;
+}
+
+/* Card icons on their own, in the card's colour, without Starlight's box. */
+.card .icon {
+	border: 0;
+	background: none;
+	padding: 0;
+	color: var(--sl-card-border);
+}
+
+.card .title {
+	gap: 0.625rem;
+}
+
+.sl-link-card {
+	border-radius: 1rem;
+	border-color: var(--sl-color-hairline-light);
+	box-shadow: none;
+}
+
+.sl-link-card:hover {
+	border-color: var(--sl-color-accent);
+	background: transparent;
+}
+
+.sl-steps > li::before {
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-text-accent);
+	border: 0;
+	font-weight: 600;
+}
+
+.sl-steps > li::after {
+	background: var(--sl-color-hairline-light);
+}
+
+/* Footer pagination: smaller titles than Starlight's. */
+.pagination-links a .link-title {
+	font-size: var(--sl-text-lg);
+	font-weight: 600;
+}
+
+.pagination-links a {
+	border-radius: 1rem;
+	border-color: var(--sl-color-hairline-light);
+	box-shadow: none;
+}
+
+.pagination-links a:hover {
+	border-color: var(--sl-color-accent);
+}
+
+/* Landing page: the Netherlands drawn from bagkit's own address list (public/netherlands.svg,
+   made by scripts/landing_map.py) behind the hero, in the accent colour. */
+.hero {
+	position: relative;
+	isolation: isolate;
+}
+
+/* The network, and on top of it packets of data moving along it (netherlands-flow.svg, which
+   animates itself and stands still for visitors who prefer reduced motion). */
+.hero::before,
+.hero::after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	inset-block: -1.5rem -3rem;
+	inset-inline: 0;
+	background-color: var(--sl-color-accent);
+	mask: url('/netherlands.svg') center / contain no-repeat;
+	-webkit-mask: url('/netherlands.svg') center / contain no-repeat;
+	opacity: 0.2;
+	pointer-events: none;
+}
+
+.hero::after {
+	background-color: var(--sl-color-accent-high);
+	mask-image: url('/netherlands-flow.svg');
+	-webkit-mask-image: url('/netherlands-flow.svg');
+	opacity: 0.45;
+}
+
+@media (min-width: 50rem) {
+	/* Centred on the terminal's column, which starts after Starlight's 3% gap. */
+	.hero::before,
+	.hero::after {
+		inset-block: -1rem;
+		inset-inline: calc(75.75% - 21%) auto;
+		width: 42%;
+	}
+
+	.hero::before {
+		opacity: 0.3;
+	}
+
+	.hero::after {
+		opacity: 0.9;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero::after {
+		display: none;
+	}
+}
+
+/* A terminal with example commands beside the hero text. */
+.hero > .hero-html {
+	order: 2;
+	width: 100%;
+}
+
+@media (min-width: 50rem) {
+	.hero {
+		grid-template-columns: 1fr 1fr;
+		/* Less room above and below than Starlight's splash hero. */
+		padding-block: clamp(2rem, 0.5rem + 6vmin, 6rem);
+	}
+
+	.hero > .hero-html {
+		width: 100%;
+	}
+
+	/* Small enough that the convert command fits on one line from 1024px. */
+	.hero .hero-terminal {
+		font-size: 0.8125rem;
+	}
+}
+
+/* Smaller on a phone, so the continued command keeps its line break. */
+@media (max-width: 50rem) {
+	.hero .hero-terminal {
+		font-size: 0.75rem;
+	}
+}
+
+.hero-terminal {
+	display: flex;
+	box-sizing: border-box;
+	width: 100%;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 1rem 1.25rem 1.5rem;
+	border: 1px solid var(--sl-color-hairline-light);
+	border-radius: 1rem;
+	/* Translucent, so the packets behind it show through. */
+	background: color-mix(in srgb, var(--sl-color-gray-6) 70%, transparent);
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	box-shadow: 0 24px 60px -28px color-mix(in srgb, var(--sl-color-accent) 45%, transparent);
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-sm);
+	line-height: 1.6;
+	text-align: start;
+}
+
+.hero-terminal code {
+	/* A command that wraps continues indented, under the command rather than the prompt. */
+	padding-inline-start: 4ch;
+	text-indent: -4ch;
+	color: var(--sl-color-white);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+/* The terminal stays dark in light mode too, with dark mode's colours. */
+:root[data-theme='light'] .hero-terminal {
+	border-color: hsl(220, 8%, 17%);
+	background: color-mix(in srgb, hsl(220, 10%, 11%) 86%, transparent);
+}
+
+:root[data-theme='light'] .hero-terminal code {
+	color: hsl(220, 14%, 97%);
+}
+
+:root[data-theme='light'] .hero-terminal b {
+	color: hsl(156, 70%, 70%);
+}
+
+/* Options and their values wrap as a unit. */
+.hero-terminal code span {
+	white-space: nowrap;
+}
+
+.hero-terminal b {
+	color: var(--sl-color-text-accent);
+	font-weight: 600;
+	user-select: none;
+}
+
+.hero-terminal .dots {
+	display: flex;
+	gap: 0.375rem;
+	margin-bottom: 0.875rem;
+}
+
+.hero-terminal .dots i {
+	width: 0.625rem;
+	height: 0.625rem;
+	border-radius: 50%;
+	background: hsl(220, 8%, 36%);
+}

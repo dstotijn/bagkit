@@ -1,0 +1,7 @@
+/target/
+/.worktrees/
+/tmp/
+*.sqlite
+*.sqlite-*
+
+__pycache__/

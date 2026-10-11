@@ -1,0 +1,66 @@
+[tools]
+"aqua:EmbarkStudios/cargo-deny" = "0.20.2"
+node = "24.18.0"
+python = "3.14.6"
+rust = { version = "1.99.0", components = "rustfmt,clippy" }
+uv = "0.12.23"
+
+[tasks.build]
+description = "Build optimized bagkit"
+run = "cargo build --release"
+
+[tasks.check]
+description = "Check formatting, lints, dependencies and tests"
+run = [
+  "cargo fmt --check",
+  "cargo clippy --locked --all-targets -- -D warnings",
+  "cargo deny check",
+  "cargo test --locked",
+]
+
+[tasks.benchmark]
+description = "Measure complete imports on deterministic synthetic BAG XML"
+depends = ["build"]
+run = "python scripts/benchmark.py"
+
+[tasks."api:check"]
+description = "Check the OpenAPI description against the NLGov API Design Rules with the DON Checker"
+dir = "tools/api-check"
+run = ["npm ci", "npm run check"]
+
+[tasks."docs:dev"]
+description = "Serve the documentation website locally"
+dir = "web"
+run = "npm run dev"
+
+[tasks."docs:build"]
+description = "Build the documentation website, failing on warnings"
+dir = "web"
+run = ["npm ci", "npm run build"]
+
+[tasks."docs:preview"]
+description = "Build the documentation website and serve the build locally"
+depends = ["docs:build"]
+dir = "web"
+run = "npm run preview"
+
+[tasks."docs:generate"]
+description = "Regenerate the reference sections of the documentation from the code"
+run = ["BAGKIT_UPDATE_DOCS=1 cargo test --test docs", "npm --prefix web run format"]
+
+[tasks."docs:format"]
+description = "Format the documentation website with oxfmt"
+dir = "web"
+run = "npm run format"
+
+[tasks."docs:check"]
+description = "Check the documentation: formatting, lints, types, a warning-free build, links, accessibility and generated sections"
+depends = ["docs:build"]
+run = [
+  "npm --prefix web run format:check",
+  "npm --prefix web run lint",
+  "npm --prefix web run typecheck",
+  "python scripts/check_docs_links.py web/dist",
+  "npm --prefix web run a11y",
+  "cargo test --test docs",
+]

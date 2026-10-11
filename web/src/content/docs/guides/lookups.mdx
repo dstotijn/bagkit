@@ -1,0 +1,48 @@
+---
+title: Looking up addresses
+description: Query a SQLite output by postcode or coordinates, on the command line or over HTTP.
+---
+
+`bagkit serve` offers an HTTP API for address lookups, and `bagkit query` answers the same requests from the command line without a server. Both read a SQLite output.
+
+## Requests
+
+| Request                                                                               | Finds                                             |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `/v1/adressen?postcode=7311KZ`                                                        | Adressen with a postcode                          |
+| `/v1/adressen?postcode=7311KZ&huisnummer=110`                                         | Adressen with that huisnummer                     |
+| `/v1/adressen?postcode=7311KZ&huisnummer=110&huisletter=A`                            | Also matching a huisletter                        |
+| `/v1/adressen?postcode=7311KZ&huisnummer=110&huisnummertoevoeging=2&exacteMatch=true` | Matching a huisnummertoevoeging and no huisletter |
+| `/v1/adressen/0003200000137381`                                                       | One adres by its nummeraanduiding's identificatie |
+| `/v1/adressen/_dichtstbij?punt=6.86877,53.31934`                                      | The adressen of the nearest adresseerbaar object  |
+
+Postcodes are four digits and two letters. Huisletters and huisnummertoevoegingen match case-insensitively. Searches leave ingetrokken nummeraanduidingen out; a lookup by identificatie returns them with their status.
+
+## On the command line
+
+```sh
+bagkit query '/v1/adressen?postcode=9902HA&huisnummer=1' --database bag.sqlite
+```
+
+Quote the request, because the shell treats `?` and `&` specially. `bagkit query` prints the response body; when the request fails, it prints the problem details and exits with an error.
+
+## Over HTTP
+
+```sh
+bagkit serve 8080 --database bag.sqlite --workers 4
+curl 'http://localhost:8080/v1/adressen?postcode=9902HA&huisnummer=1'
+```
+
+Responses are JSON objects; searches list their results under `adressen`, which is empty when nothing matches. The server describes its API at `/v1/openapi.json`, and the [HTTP API reference](/reference/http/) explains every resource, field, status code and limit.
+
+## Nearest lookup
+
+A nearest lookup converts the punt to RD New when it is in WGS84, and searches the spatial index for the closest adresseerbaar object that has a current nummeraanduiding, widening the search from 100 m up to 25.6 km. It returns that object's adressen, hoofdadres first, each with its `afstand` in metres. Ligplaatsen and standplaatsen count as well as verblijfsobjecten, ties go to the smallest identificatie, and points outside the Netherlands find nothing. Pass `puntCrs` to search from an RD New point, and `crs` to get RD New coordinates back; see [Coordinates](/reference/http/#coordinates).
+
+:::note
+bagkit converts between RD New and WGS84 as the EPSG dataset defines them: the RD New projection, and the Amersfoort to WGS 84 (4) shift (EPSG:4833), which PROJ also uses when it has no correction grids. EPSG states that shift accurate to about a metre: close enough to find an address. Use the official RDNAPTRANS™ procedure where survey accuracy matters.
+:::
+
+## Under load
+
+The server runs a fixed pool of database workers behind a bounded queue and limits connections and their lifetime, so idle or slow clients cannot tie it up.

@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - run: mise exec -- cargo fmt --check
+      - run: mise exec -- cargo clippy --locked --all-targets -- -D warnings
+      - run: mise exec -- cargo deny check
+      - run: mise exec -- cargo publish --dry-run --locked
+      - name: Build the library without optional features
+        run: mise exec -- cargo build --locked --lib --no-default-features
+      - name: Lint the install script and workflows
+        run: |
+          mise exec shellcheck@latest -- shellcheck -s sh install.sh
+          mise exec actionlint@latest -- actionlint
+      - name: Check the OpenAPI description against the NLGov API Design Rules
+        run: mise run api:check
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: rust
+      - name: Test (including the documentation drift test)
+        run: mise exec -- cargo test --locked
+
+  msrv:
+    name: Minimum supported Rust version
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check with the rust-version from Cargo.toml
+        run: |
+          msrv=$(sed -n 's/^rust-version = "\(.*\)"$/\1/p' Cargo.toml)
+          rustup toolchain install "$msrv" --profile minimal
+          cargo "+$msrv" check --locked --all-targets
+
+  docs:
+    name: Documentation site
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - name: Install a browser for the accessibility check
+        run: npm ci --prefix web && npx --prefix web playwright install --with-deps --only-shell chromium
+      - name: Build the site and check its links and accessibility
+        run: mise run docs:check
+      - name: Check links under the GitHub Pages base path
+        env:
+          SITE_URL: https://dstotijn.github.io/bagkit
+        run: mise run docs:build && mise exec -- python scripts/check_docs_links.py web/dist
+
+  docs-touched:
+    name: Documentation updated with documented code
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'docs-not-needed')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: python
+      - run: mise exec -- python scripts/check_docs_touched.py "origin/$GITHUB_BASE_REF" HEAD

@@ -1,0 +1,28 @@
+---
+title: Keeping data current
+description: Rebuild from each new extract and replace outputs safely.
+---
+
+Kadaster publishes a new national extract on the 8th of every month, linked from its [download page](https://www.kadaster.nl/-/gratis-download-bag-extract). bagkit does not apply changes to an existing output; it builds a new one from the full extract. See [ADR-0001](https://github.com/dstotijn/bagkit/blob/main/docs/adr/0001-immutable-snapshots.md) for why.
+
+```sh
+curl -O https://service.pdok.nl/kadaster/adressen/atom/v1_0/downloads/lvbag-extract-nl.zip
+bagkit convert lvbag-extract-nl.zip --output bag.sqlite --force
+```
+
+## How replacing works
+
+- The new output is built beside the destination, so you need disk space for both.
+- A file replaces the old one in one atomic rename once it is complete and synced.
+- A directory replaces the old one by moving it aside first and removing it afterwards, so for a moment there is no destination, and nobody ever reads a half-written one.
+- If the conversion fails, the previous output stays as it was.
+
+:::caution[Running servers]
+Stop `bagkit serve` before replacing its database, and start it again afterwards. On Windows, a database that is open can't be replaced. On macOS and Linux the replacement succeeds, but the running server keeps reading the old database until it restarts.
+:::
+
+SQLite databases with open writers can't be replaced: close them and checkpoint any `-wal` or `-journal` files first.
+
+## Which date to use
+
+By default, a conversion selects the voorkomens current today. Pass `--date` to match the extract's own date, which the [metadata](/reference/metadata/) records as `extract_date`, or to see the BAG as it will stand on a future date that the extract already knows about.

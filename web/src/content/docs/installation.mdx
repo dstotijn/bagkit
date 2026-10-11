@@ -1,0 +1,79 @@
+---
+title: Installation
+description: Install the command, build it from source, or add the library to a Rust project.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+bagkit is a single executable with SQLite compiled in, so it needs no database server or system libraries.
+
+<Tabs>
+<TabItem label="Install script">
+
+On macOS and Linux:
+
+```sh
+curl -fsSL https://dstotijn.github.io/bagkit/install.sh | sh
+```
+
+The script downloads the latest [release](https://github.com/dstotijn/bagkit/releases) for your platform, verifies its SHA-256 checksum and installs it to `~/.local/bin`. Set `BAGKIT_VERSION` to pin a release, such as `v0.1.0`, and `BAGKIT_INSTALL_DIR` to install elsewhere:
+
+```sh
+curl -fsSL https://dstotijn.github.io/bagkit/install.sh | BAGKIT_VERSION=v0.1.0 BAGKIT_INSTALL_DIR=/opt/bin sh
+```
+
+Release binaries cover macOS and Linux on arm64 and x86_64, and Windows on x86_64; the Linux binaries are statically linked. On Windows, download `bagkit-x86_64-pc-windows-msvc.zip` from the releases page and put `bagkit.exe` on your `PATH`.
+
+</TabItem>
+<TabItem label="Cargo">
+
+With Rust 1.88 or later:
+
+```sh
+cargo install --locked bagkit
+```
+
+</TabItem>
+<TabItem label="From source">
+
+The repository pins Rust, Python and Node with [mise](https://mise.jdx.dev):
+
+```sh
+git clone https://github.com/dstotijn/bagkit
+cd bagkit
+mise trust && mise install
+mise exec -- cargo build --release
+./target/release/bagkit --help
+```
+
+`mise run check` runs formatting, lints and tests.
+
+</TabItem>
+<TabItem label="Library">
+
+Add bagkit to a Rust project. Without default features it reads extracts and writes CSV, with no SQLite, Parquet or HTTP dependencies:
+
+```toml title="Cargo.toml"
+[dependencies]
+bagkit = { version = "0.1", default-features = false }
+```
+
+See [Using the Rust library](/guides/library/).
+
+</TabItem>
+</Tabs>
+
+## Crate features
+
+| Feature   | Adds                                         | Default |
+| --------- | -------------------------------------------- | ------- |
+| `sqlite`  | SQLite output, lookups and the spatial index | yes     |
+| `parquet` | Parquet and GeoParquet output                | yes     |
+| `server`  | The HTTP lookup server                       | yes     |
+| `cli`     | The `bagkit` command                         | yes     |
+
+## Requirements
+
+- **Memory:** a full national conversion peaks at about 1 GiB.
+- **Disk:** room for the 3.6 GB extract, the output (up to 6 GiB for SQLite), and a second copy of the output while it replaces an existing one. SQLite sorts spill to temporary files, and so do ZIPs nested more than one level deep that are larger than 64 MiB; the national extract has none.
+- **CPU:** every core is used by default; `--threads` limits that.

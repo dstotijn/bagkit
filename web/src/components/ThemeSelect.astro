@@ -1,0 +1,104 @@
+---
+// The theme switch as a toggle rather than Starlight's select. Until it is used, the site follows
+// the system's colour scheme ("auto"); a click switches to the other theme and keeps it, under the
+// same localStorage key as Starlight, so its early script applies the choice before the page
+// paints. There is no way back to auto, by choice.
+---
+
+<bk-theme-toggle>
+	<button type="button" class="theme-toggle" aria-label="Switch theme">
+		<svg class="moon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+			<path
+				d="M13.5 9.8A5.75 5.75 0 0 1 6.2 2.5a5.75 5.75 0 1 0 7.3 7.3Z"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.4"
+				stroke-linejoin="round"></path>
+		</svg>
+		<svg class="sun" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+			<circle cx="8" cy="8" r="2.75" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
+			<path
+				d="M8 1.25v1.5M8 13.25v1.5M1.25 8h1.5M13.25 8h1.5M3.2 3.2l1.06 1.06M11.74 11.74l1.06 1.06M3.2 12.8l1.06-1.06M11.74 4.26l1.06-1.06"
+				stroke="currentColor"
+				stroke-width="1.4"
+				stroke-linecap="round"></path>
+		</svg>
+	</button>
+</bk-theme-toggle>
+
+<script>
+	const storageKey = 'starlight-theme';
+	const root = document.documentElement;
+
+	const stored = (): string | null => {
+		try {
+			return localStorage.getItem(storageKey);
+		} catch {
+			return null;
+		}
+	};
+
+	const preferred = () => (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+	const label = () => {
+		const name = root.dataset.theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
+		document.querySelectorAll('bk-theme-toggle button').forEach((b) => b.setAttribute('aria-label', name));
+	};
+
+	// Follow the system while no theme has been chosen.
+	matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+		const theme = stored();
+		if (theme !== 'light' && theme !== 'dark') {
+			root.dataset.theme = preferred();
+			label();
+		}
+	});
+
+	class ThemeToggle extends HTMLElement {
+		constructor() {
+			super();
+			label();
+			this.querySelector('button')?.addEventListener('click', () => {
+				const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+				root.dataset.theme = next;
+				try {
+					localStorage.setItem(storageKey, next);
+				} catch {
+					// Without storage the choice lasts until the page changes.
+				}
+				label();
+			});
+		}
+	}
+	customElements.define('bk-theme-toggle', ThemeToggle);
+</script>
+
+<style>
+	bk-theme-toggle {
+		display: flex;
+		align-items: center;
+	}
+
+	.theme-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+	}
+
+	.theme-toggle:hover {
+		color: var(--sl-color-white);
+	}
+
+	/* The icon shows what a click switches to. */
+	:global([data-theme='light']) .sun,
+	:global(:root:not([data-theme='light'])) .moon {
+		display: none;
+	}
+</style>

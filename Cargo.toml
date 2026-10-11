@@ -1,0 +1,62 @@
+[package]
+name = "bagkit"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Toolkit for Dutch BAG address and building data: streaming SQLite import and address lookups"
+license = "MIT"
+repository = "https://github.com/dstotijn/bagkit"
+readme = "README.md"
+keywords = ["bag", "addresses", "geocoding", "sqlite", "parquet"]
+categories = ["command-line-utilities", "science::geo", "parser-implementations"]
+include = ["/src", "/README.md", "/LICENSE"]
+
+[features]
+default = ["cli", "parquet"]
+# SQLite output, lookups and the spatial index.
+sqlite = ["dep:rusqlite"]
+# Parquet output.
+parquet = ["dep:parquet", "dep:bytes"]
+# The HTTP lookup server.
+server = ["sqlite", "dep:http-body-util", "dep:hyper", "dep:hyper-util", "dep:tokio"]
+# The bagkit command.
+cli = ["sqlite", "server", "dep:clap"]
+
+[dependencies]
+anyhow = "1.0.104"
+bytes = { version = "1.12.1", optional = true }
+chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
+clap = { version = "4.6.7", features = ["derive"], optional = true }
+flate2 = "1.1.10"
+http-body-util = { version = "0.1.5", optional = true }
+hyper = { version = "1.12.0", features = ["http1", "server"], optional = true }
+hyper-util = { version = "0.1.21", features = ["tokio"], optional = true }
+memchr = "2.8.3"
+parquet = { version = "60.0.0", default-features = false, features = ["zstd"], optional = true }
+quick-xml = "0.38.4"
+rusqlite = { version = "0.37.0", features = ["bundled"], optional = true }
+serde_json = { version = "1.0.151", features = ["preserve_order", "float_roundtrip"] }
+tempfile = "3.27.0"
+tokio = { version = "1.53.2", features = ["net", "rt", "sync", "time"], optional = true }
+zip = { version = "4.6.1", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+regex = "1.13.1"
+
+[[bin]]
+name = "bagkit"
+path = "src/main.rs"
+required-features = ["cli"]
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[[bench]]
+name = "lookup"
+harness = false
+
+[[bench]]
+name = "parse"
+harness = false

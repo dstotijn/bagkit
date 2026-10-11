@@ -1,0 +1,38 @@
+---
+title: Introduction
+description: What bagkit does with the BAG extract, and where to go next.
+---
+
+import NavCard from '../../components/NavCard.astro';
+import NavCards from '../../components/NavCards.astro';
+
+bagkit reads the national [BAG](/concepts/bag/) extract that Kadaster publishes every month, keeps the voorkomens that are current on a date you choose, and writes them in a shape you can use straight away. It is a command-line tool and a Rust library.
+
+```sh
+bagkit convert lvbag-extract-nl.zip --format parquet --output bag
+```
+
+That converts the whole country: 10.8 million nummeraanduidingen, 10.8 million verblijfsobjecten, ligplaatsen and standplaatsen, and 12.8 million panden with their geometrie.
+
+<NavCards>
+  <NavCard title="Quickstart" href="/quickstart/" icon="rocket">
+    Download the extract, convert it and look up your first address.
+  </NavCard>
+  <NavCard title="Converting extracts" href="/guides/converting/" icon="setting">
+    Choose a format, a shape and the object types you need.
+  </NavCard>
+  <NavCard title="Address lists" href="/guides/address-lists/" icon="list-format">
+    One row per adres with its names and coordinates.
+  </NavCard>
+  <NavCard title="Rust library" href="/guides/library/" icon="seti:rust">
+    Stream current BAG voorkomens into your own code, in parallel.
+  </NavCard>
+</NavCards>
+
+## Why bagkit
+
+The BAG extract is about 105 GiB of XML in nested ZIP archives. Each object appears once for every voorkomen in its history, inactief and ingetrokken voorkomens sit beside current ones, and the relations between nummeraanduidingen, adresseerbare objecten and panden point in several directions. bagkit does the work of selecting what is current on a date, joining it together and checking it, and does it fast enough that you can rebuild from scratch whenever a new extract appears.
+
+:::note
+bagkit is not affiliated with Kadaster or PDOK. The BAG data is published by Kadaster under [CC0](https://creativecommons.org/publicdomain/zero/1.0/); bagkit is MIT licensed.
+:::

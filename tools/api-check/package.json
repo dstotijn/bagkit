@@ -1,0 +1,16 @@
+{
+	"name": "bagkit-api-check",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Checks bagkit's OpenAPI description against the NLGov API Design Rules with the DON Checker from developer.overheid.nl.",
+	"scripts": {
+		"check": "don-checker validate --standard adr --version 2.1.0 --input ../../src/openapi.json"
+	},
+	"devDependencies": {
+		"@developer-overheid-nl/don-checker": "1.2.1"
+	},
+	"allowScripts": {
+		"@scarf/scarf": false,
+		"esbuild": false
+	}
+}

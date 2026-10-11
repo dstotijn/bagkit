@@ -1,0 +1,45 @@
+---
+title: Using GIS tools
+description: Open bagkit outputs in QGIS, GDAL and GeoPandas.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Geometrie is in **RD New (EPSG:28992)**, the Dutch national grid the BAG uses: `geometrie` holds a pand's vlak, and `vlak` an adresseerbaar object's. Punten are in RD New (`rd_x`, `rd_y`) and WGS84 (`breedtegraad`, `lengtegraad`).
+
+<Tabs>
+<TabItem label="QGIS and GDAL">
+
+A SQLite output of tables is also a GeoPackage, with `panden` and `adresseerbare_objecten` registered as feature tables. Open it in QGIS with **Layer › Add Layer › Add Vector Layer**, or inspect it with GDAL:
+
+```sh
+ogrinfo bag.sqlite
+```
+
+GDAL warns that a GeoPackage should use the `.gpkg` extension; the warning is harmless, or rename the file.
+
+</TabItem>
+<TabItem label="GeoPandas">
+
+Parquet geometrie carries GeoParquet metadata, so GeoPandas reads it as geometry with its CRS:
+
+```python
+import geopandas
+
+panden = geopandas.read_parquet("bag/panden.parquet")
+print(panden.crs)  # EPSG:28992
+```
+
+</TabItem>
+<TabItem label="CSV">
+
+CSV geometrie is WKT. In QGIS, add it as a **Delimited Text** layer with `geometrie` (or `vlak`) as the geometry field and EPSG:28992 as the CRS. For an adreslijst, use `lengtegraad` and `breedtegraad` as point coordinates in EPSG:4326.
+
+</TabItem>
+</Tabs>
+
+## Punten
+
+Every adresseerbaar object has a punt: the one the BAG records, or else the area-weighted centroid of its vlak. Ligplaatsen and standplaatsen only have a vlak. Punten outside RD New's area of use, which some withdrawn verblijfsobjecten carry as placeholders, keep their RD New coordinates but get no WGS84 coordinates.
+
+Use `--exclude geometrie` when you only need punten; the punten are still computed.

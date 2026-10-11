@@ -1,0 +1,40 @@
+# Which documentation pages describe which code. When a pull request changes code matched
+# here, scripts/check_docs_touched.py expects at least one of its pages to change too, or
+# the `docs-not-needed` label. Paths are relative to web/src/content/docs. Reference
+# sections generated from code (see tests/docs.rs) are checked by `cargo test` instead.
+
+[[map]]
+code = ["src/cli.rs"]
+docs = ["reference/cli.md", "guides/converting.mdx", "quickstart.mdx"]
+
+[[map]]
+code = ["src/convert.rs", "src/output.rs", "src/tables.rs"]
+docs = ["guides/converting.mdx", "guides/updating.mdx", "reference/tables.md", "reference/metadata.md"]
+
+[[map]]
+code = ["src/address_list.rs"]
+docs = ["guides/address-lists.mdx", "reference/address-list.md"]
+
+[[map]]
+code = ["src/dataset.rs", "src/derived.rs", "src/sqlite.rs", "src/derived.sql", "src/indexes.sql", "src/gpkg.sql"]
+docs = ["reference/tables.md", "guides/gis.mdx"]
+
+[[map]]
+code = ["src/parquet.rs"]
+docs = ["guides/converting.mdx", "guides/gis.mdx", "reference/tables.md"]
+
+[[map]]
+code = ["src/extract.rs", "src/source.rs", "src/xml.rs"]
+docs = ["concepts/architecture.md", "concepts/reference-dates.md", "guides/library.mdx"]
+
+[[map]]
+code = ["src/municipalities.rs", "src/municipalities.tsv"]
+docs = ["concepts/bag.md", "reference/tables.md"]
+
+[[map]]
+code = ["src/api.rs", "src/openapi.json", "src/query.rs", "src/server.rs", "src/geo.rs", "src/rtree.rs"]
+docs = ["guides/lookups.mdx", "reference/http.md"]
+
+[[map]]
+code = ["src/lib.rs", "Cargo.toml"]
+docs = ["installation.mdx", "guides/library.mdx"]

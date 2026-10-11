@@ -1,0 +1,3 @@
+# Check out text files with LF endings on every platform, so the documentation drift test
+# compares generated text byte for byte on Windows too.
+* text=auto eol=lf

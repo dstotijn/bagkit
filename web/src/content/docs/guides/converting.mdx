@@ -1,0 +1,105 @@
+---
+title: Converting extracts
+description: Choose a format, a shape and the object types to convert.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+`bagkit convert` reads one or more inputs and writes one output. Inputs can be the national ZIP, nested ZIPs, gzip or plain XML files, or directories of them, in any order. Directories are searched recursively; symbolic links that form a cycle are not supported.
+
+```txt
+bagkit convert <INPUTS>...
+    [--format sqlite|csv|parquet]
+    [--shape tables|addresses]
+    [--include TYPES] [--exclude TYPES]
+    [--date YYYY-MM-DD]
+    [--output PATH] [--force]
+```
+
+## Formats
+
+<Tabs>
+<TabItem label="SQLite">
+
+```sh
+bagkit convert lvbag-extract-nl.zip --output bag.sqlite
+```
+
+One database file with indexes, the `adressen` view, a spatial index and GeoPackage registration. It is the only format that `query` and `serve` can use, and QGIS opens it directly.
+
+</TabItem>
+<TabItem label="Parquet">
+
+```sh
+bagkit convert lvbag-extract-nl.zip --format parquet --output bag
+```
+
+A directory with one zstd-compressed Parquet file per table and a `metadata.json`. Geometrie is GeoParquet geometry in RD New. The national extract takes about 1.3 GiB.
+
+</TabItem>
+<TabItem label="CSV">
+
+```sh
+bagkit convert lvbag-extract-nl.zip --format csv --output bag
+```
+
+A directory with one CSV file per table and a `metadata.json`. Identificaties are written in their official zero-padded form and geometrie as WKT. The national extract takes about 5.4 GiB.
+
+</TabItem>
+</Tabs>
+
+Values mean the same in every format; see [Tables](/reference/tables/) for how each column is written.
+
+## Shapes
+
+- **`tables`** (the default) writes one dataset per object type, linked by identificaties. See [Tables](/reference/tables/).
+- **`addresses`** writes the adreslijst: one flat row per current adres, with its names and coordinates already joined. See [Address lists](/guides/address-lists/).
+
+## Choosing object types
+
+`--include` and `--exclude` take comma-separated object types and apply to the tables shape:
+
+| Name                     | What it covers                                                        |
+| ------------------------ | --------------------------------------------------------------------- |
+| `woonplaatsen`           | Woonplaatsen                                                          |
+| `gemeenten`              | Each woonplaats's gemeente, and the names and provincies of gemeenten |
+| `openbare-ruimten`       | Openbare ruimten                                                      |
+| `nummeraanduidingen`     | Nummeraanduidingen                                                    |
+| `adresseerbare-objecten` | Verblijfsobjecten, ligplaatsen and standplaatsen                      |
+| `panden`                 | Panden                                                                |
+| `geometrie`              | The vlakken of panden and adresseerbare objecten                      |
+
+```sh
+# Everything except panden and geometrie.
+bagkit convert lvbag-extract-nl.zip --format parquet --exclude panden,geometrie
+
+# Only nummeraanduidingen and their adresseerbare objecten, with geometrie.
+bagkit convert lvbag-extract-nl.zip --include nummeraanduidingen,adresseerbare-objecten,geometrie
+```
+
+Object types nobody selected are skipped without being read, so leaving out panden, the largest part of the extract, saves the most work.
+
+:::caution[List geometrie when including]
+With `--include`, geometrie is only read when `geometrie` is in the list.
+:::
+
+What leaving types out means for the rest:
+
+- A reference is [checked](/concepts/import-rules/) only when both sides were read. Without `openbare-ruimten`, a nummeraanduiding's `openbare_ruimte_identificatie` is kept as the BAG records it, unverified.
+- Without `adresseerbare-objecten`, nummeraanduidingen have no object link, since that link comes from the objects.
+- The `verblijfsobject_panden` table needs both `adresseerbare-objecten` and `panden`.
+- A SQLite database always has every table, empty for the types that were not read, so its views and lookups keep working. The [metadata](/reference/metadata/) lists the types that were read.
+
+## Peildatum
+
+Every conversion selects the voorkomens that are current on one date, the peildatum, by default today's. Use `--date` for another one:
+
+```sh
+bagkit convert lvbag-extract-nl.zip --date 2026-10-08
+```
+
+See [Peildatum](/concepts/reference-dates/) for what "current" means.
+
+## Outputs and replacing them
+
+The default output is `bag.sqlite`, the directory `bag`, or `adreslijst.csv`/`adreslijst.parquet`. bagkit refuses to overwrite an existing output unless you pass `--force`. Either way the output is built beside its destination and only moved into place once it is complete, so a failed conversion never leaves a half-written file. See [Keeping data current](/guides/updating/).

@@ -1,0 +1,344 @@
+# PDOK brk-bestuurlijke-gebieden gemeentegebied, retrieved 2026-10-10
+code	name	province
+0014	Groningen	Groningen
+0034	Almere	Flevoland
+0037	Stadskanaal	Groningen
+0047	Veendam	Groningen
+0050	Zeewolde	Flevoland
+0059	Achtkarspelen	Fryslân
+0060	Ameland	Fryslân
+0072	Harlingen	Fryslân
+0074	Heerenveen	Fryslân
+0080	Leeuwarden	Fryslân
+0085	Ooststellingwerf	Fryslân
+0086	Opsterland	Fryslân
+0088	Schiermonnikoog	Fryslân
+0090	Smallingerland	Fryslân
+0093	Terschelling	Fryslân
+0096	Vlieland	Fryslân
+0098	Weststellingwerf	Fryslân
+0106	Assen	Drenthe
+0109	Coevorden	Drenthe
+0114	Emmen	Drenthe
+0118	Hoogeveen	Drenthe
+0119	Meppel	Drenthe
+0141	Almelo	Overijssel
+0147	Borne	Overijssel
+0148	Dalfsen	Overijssel
+0150	Deventer	Overijssel
+0153	Enschede	Overijssel
+0158	Haaksbergen	Overijssel
+0160	Hardenberg	Overijssel
+0163	Hellendoorn	Overijssel
+0164	Hengelo (O)	Overijssel
+0166	Kampen	Overijssel
+0168	Losser	Overijssel
+0171	Noordoostpolder	Flevoland
+0173	Oldenzaal	Overijssel
+0175	Ommen	Overijssel
+0177	Raalte	Overijssel
+0180	Staphorst	Overijssel
+0183	Tubbergen	Overijssel
+0184	Urk	Flevoland
+0189	Wierden	Overijssel
+0193	Zwolle	Overijssel
+0197	Aalten	Gelderland
+0200	Apeldoorn	Gelderland
+0202	Arnhem	Gelderland
+0203	Barneveld	Gelderland
+0209	Beuningen	Gelderland
+0213	Brummen	Gelderland
+0214	Buren	Gelderland
+0216	Culemborg	Gelderland
+0221	Doesburg	Gelderland
+0222	Doetinchem	Gelderland
+0225	Druten	Gelderland
+0226	Duiven	Gelderland
+0228	Ede	Gelderland
+0230	Elburg	Gelderland
+0232	Epe	Gelderland
+0233	Ermelo	Gelderland
+0243	Harderwijk	Gelderland
+0244	Hattem	Gelderland
+0246	Heerde	Gelderland
+0252	Heumen	Gelderland
+0262	Lochem	Gelderland
+0263	Maasdriel	Gelderland
+0267	Nijkerk	Gelderland
+0268	Nijmegen	Gelderland
+0269	Oldebroek	Gelderland
+0273	Putten	Gelderland
+0274	Renkum	Gelderland
+0275	Rheden	Gelderland
+0277	Rozendaal	Gelderland
+0279	Scherpenzeel	Gelderland
+0281	Tiel	Gelderland
+0285	Voorst	Gelderland
+0289	Wageningen	Gelderland
+0293	Westervoort	Gelderland
+0294	Winterswijk	Gelderland
+0296	Wijchen	Gelderland
+0297	Zaltbommel	Gelderland
+0299	Zevenaar	Gelderland
+0301	Zutphen	Gelderland
+0302	Nunspeet	Gelderland
+0303	Dronten	Flevoland
+0307	Amersfoort	Utrecht
+0308	Baarn	Utrecht
+0310	De Bilt	Utrecht
+0312	Bunnik	Utrecht
+0313	Bunschoten	Utrecht
+0317	Eemnes	Utrecht
+0321	Houten	Utrecht
+0327	Leusden	Utrecht
+0331	Lopik	Utrecht
+0335	Montfoort	Utrecht
+0339	Renswoude	Utrecht
+0340	Rhenen	Utrecht
+0342	Soest	Utrecht
+0344	Utrecht	Utrecht
+0345	Veenendaal	Utrecht
+0351	Woudenberg	Utrecht
+0352	Wijk bij Duurstede	Utrecht
+0353	IJsselstein	Utrecht
+0355	Zeist	Utrecht
+0356	Nieuwegein	Utrecht
+0358	Aalsmeer	Noord-Holland
+0361	Alkmaar	Noord-Holland
+0362	Amstelveen	Noord-Holland
+0363	Amsterdam	Noord-Holland
+0373	Bergen (NH)	Noord-Holland
+0375	Beverwijk	Noord-Holland
+0376	Blaricum	Noord-Holland
+0377	Bloemendaal	Noord-Holland
+0383	Castricum	Noord-Holland
+0384	Diemen	Noord-Holland
+0385	Edam-Volendam	Noord-Holland
+0388	Enkhuizen	Noord-Holland
+0392	Haarlem	Noord-Holland
+0394	Haarlemmermeer	Noord-Holland
+0396	Heemskerk	Noord-Holland
+0397	Heemstede	Noord-Holland
+0399	Heiloo	Noord-Holland
+0400	Den Helder	Noord-Holland
+0402	Hilversum	Noord-Holland
+0405	Hoorn	Noord-Holland
+0406	Huizen	Noord-Holland
+0415	Landsmeer	Noord-Holland
+0417	Laren	Noord-Holland
+0420	Medemblik	Noord-Holland
+0431	Oostzaan	Noord-Holland
+0432	Opmeer	Noord-Holland
+0437	Ouder-Amstel	Noord-Holland
+0439	Purmerend	Noord-Holland
+0441	Schagen	Noord-Holland
+0448	Texel	Noord-Holland
+0450	Uitgeest	Noord-Holland
+0451	Uithoorn	Noord-Holland
+0453	Velsen	Noord-Holland
+0473	Zandvoort	Noord-Holland
+0479	Zaanstad	Noord-Holland
+0482	Alblasserdam	Zuid-Holland
+0484	Alphen aan den Rijn	Zuid-Holland
+0489	Barendrecht	Zuid-Holland
+0498	Drechterland	Noord-Holland
+0502	Capelle aan den IJssel	Zuid-Holland
+0503	Delft	Zuid-Holland
+0505	Dordrecht	Zuid-Holland
+0512	Gorinchem	Zuid-Holland
+0513	Gouda	Zuid-Holland
+0518	's-Gravenhage	Zuid-Holland
+0523	Hardinxveld-Giessendam	Zuid-Holland
+0531	Hendrik-Ido-Ambacht	Zuid-Holland
+0532	Stede Broec	Noord-Holland
+0534	Hillegom	Zuid-Holland
+0537	Katwijk	Zuid-Holland
+0542	Krimpen aan den IJssel	Zuid-Holland
+0546	Leiden	Zuid-Holland
+0547	Leiderdorp	Zuid-Holland
+0553	Lisse	Zuid-Holland
+0556	Maassluis	Zuid-Holland
+0569	Nieuwkoop	Zuid-Holland
+0575	Noordwijk	Zuid-Holland
+0579	Oegstgeest	Zuid-Holland
+0589	Oudewater	Utrecht
+0590	Papendrecht	Zuid-Holland
+0597	Ridderkerk	Zuid-Holland
+0599	Rotterdam	Zuid-Holland
+0603	Rijswijk	Zuid-Holland
+0606	Schiedam	Zuid-Holland
+0610	Sliedrecht	Zuid-Holland
+0613	Albrandswaard	Zuid-Holland
+0622	Vlaardingen	Zuid-Holland
+0626	Voorschoten	Zuid-Holland
+0627	Waddinxveen	Zuid-Holland
+0629	Wassenaar	Zuid-Holland
+0632	Woerden	Utrecht
+0637	Zoetermeer	Zuid-Holland
+0638	Zoeterwoude	Zuid-Holland
+0642	Zwijndrecht	Zuid-Holland
+0654	Borsele	Zeeland
+0664	Goes	Zeeland
+0668	West Maas en Waal	Gelderland
+0677	Hulst	Zeeland
+0678	Kapelle	Zeeland
+0687	Middelburg	Zeeland
+0703	Reimerswaal	Zeeland
+0715	Terneuzen	Zeeland
+0716	Tholen	Zeeland
+0717	Veere	Zeeland
+0718	Vlissingen	Zeeland
+0736	De Ronde Venen	Utrecht
+0737	Tytsjerksteradiel	Fryslân
+0743	Asten	Noord-Brabant
+0744	Baarle-Nassau	Noord-Brabant
+0748	Bergen op Zoom	Noord-Brabant
+0753	Best	Noord-Brabant
+0755	Boekel	Noord-Brabant
+0757	Boxtel	Noord-Brabant
+0758	Breda	Noord-Brabant
+0762	Deurne	Noord-Brabant
+0765	Pekela	Groningen
+0766	Dongen	Noord-Brabant
+0770	Eersel	Noord-Brabant
+0772	Eindhoven	Noord-Brabant
+0777	Etten-Leur	Noord-Brabant
+0779	Geertruidenberg	Noord-Brabant
+0784	Gilze en Rijen	Noord-Brabant
+0785	Goirle	Noord-Brabant
+0794	Helmond	Noord-Brabant
+0796	's-Hertogenbosch	Noord-Brabant
+0797	Heusden	Noord-Brabant
+0798	Hilvarenbeek	Noord-Brabant
+0809	Loon op Zand	Noord-Brabant
+0820	Nuenen, Gerwen en Nederwetten	Noord-Brabant
+0823	Oirschot	Noord-Brabant
+0824	Oisterwijk	Noord-Brabant
+0826	Oosterhout	Noord-Brabant
+0828	Oss	Noord-Brabant
+0840	Rucphen	Noord-Brabant
+0845	Sint-Michielsgestel	Noord-Brabant
+0847	Someren	Noord-Brabant
+0848	Son en Breugel	Noord-Brabant
+0851	Steenbergen	Noord-Brabant
+0852	Waterland	Noord-Holland
+0855	Tilburg	Noord-Brabant
+0858	Valkenswaard	Noord-Brabant
+0861	Veldhoven	Noord-Brabant
+0865	Vught	Noord-Brabant
+0866	Waalre	Noord-Brabant
+0867	Waalwijk	Noord-Brabant
+0873	Woensdrecht	Noord-Brabant
+0879	Zundert	Noord-Brabant
+0880	Wormerland	Noord-Holland
+0882	Landgraaf	Limburg
+0888	Beek	Limburg
+0889	Beesel	Limburg
+0893	Bergen (L)	Limburg
+0899	Brunssum	Limburg
+0907	Gennep	Limburg
+0917	Heerlen	Limburg
+0928	Kerkrade	Limburg
+0935	Maastricht	Limburg
+0938	Meerssen	Limburg
+0944	Mook en Middelaar	Limburg
+0946	Nederweert	Limburg
+0957	Roermond	Limburg
+0965	Simpelveld	Limburg
+0971	Stein	Limburg
+0981	Vaals	Limburg
+0983	Venlo	Limburg
+0984	Venray	Limburg
+0986	Voerendaal	Limburg
+0988	Weert	Limburg
+0994	Valkenburg aan de Geul	Limburg
+0995	Lelystad	Flevoland
+1507	Horst aan de Maas	Limburg
+1509	Oude IJsselstreek	Gelderland
+1525	Teylingen	Zuid-Holland
+1581	Utrechtse Heuvelrug	Utrecht
+1586	Oost Gelre	Gelderland
+1598	Koggenland	Noord-Holland
+1621	Lansingerland	Zuid-Holland
+1640	Leudal	Limburg
+1641	Maasgouw	Limburg
+1652	Gemert-Bakel	Noord-Brabant
+1655	Halderberge	Noord-Brabant
+1658	Heeze-Leende	Noord-Brabant
+1659	Laarbeek	Noord-Brabant
+1667	Reusel-De Mierden	Noord-Brabant
+1669	Roerdalen	Limburg
+1674	Roosendaal	Noord-Brabant
+1676	Schouwen-Duiveland	Zeeland
+1680	Aa en Hunze	Drenthe
+1681	Borger-Odoorn	Drenthe
+1690	De Wolden	Drenthe
+1695	Noord-Beveland	Zeeland
+1696	Wijdemeren	Noord-Holland
+1699	Noordenveld	Drenthe
+1700	Twenterand	Overijssel
+1701	Westerveld	Drenthe
+1705	Lingewaard	Gelderland
+1706	Cranendonck	Noord-Brabant
+1708	Steenwijkerland	Overijssel
+1709	Moerdijk	Noord-Brabant
+1711	Echt-Susteren	Limburg
+1714	Sluis	Zeeland
+1719	Drimmelen	Noord-Brabant
+1721	Bernheze	Noord-Brabant
+1723	Alphen-Chaam	Noord-Brabant
+1724	Bergeijk	Noord-Brabant
+1728	Bladel	Noord-Brabant
+1729	Gulpen-Wittem	Limburg
+1730	Tynaarlo	Drenthe
+1731	Midden-Drenthe	Drenthe
+1734	Overbetuwe	Gelderland
+1735	Hof van Twente	Overijssel
+1740	Neder-Betuwe	Gelderland
+1742	Rijssen-Holten	Overijssel
+1771	Geldrop-Mierlo	Noord-Brabant
+1773	Olst-Wijhe	Overijssel
+1774	Dinkelland	Overijssel
+1783	Westland	Zuid-Holland
+1842	Midden-Delfland	Zuid-Holland
+1859	Berkelland	Gelderland
+1876	Bronckhorst	Gelderland
+1883	Sittard-Geleen	Limburg
+1884	Kaag en Braassem	Zuid-Holland
+1891	Dantumadiel	Fryslân
+1892	Zuidplas	Zuid-Holland
+1894	Peel en Maas	Limburg
+1895	Oldambt	Groningen
+1896	Zwartewaterland	Overijssel
+1900	Súdwest-Fryslân	Fryslân
+1901	Bodegraven-Reeuwijk	Zuid-Holland
+1903	Eijsden-Margraten	Limburg
+1904	Stichtse Vecht	Utrecht
+1911	Hollands Kroon	Noord-Holland
+1916	Leidschendam-Voorburg	Zuid-Holland
+1924	Goeree-Overflakkee	Zuid-Holland
+1926	Pijnacker-Nootdorp	Zuid-Holland
+1930	Nissewaard	Zuid-Holland
+1931	Krimpenerwaard	Zuid-Holland
+1940	De Fryske Marren	Fryslân
+1942	Gooise Meren	Noord-Holland
+1945	Berg en Dal	Gelderland
+1948	Meierijstad	Noord-Brabant
+1949	Waadhoeke	Fryslân
+1950	Westerwolde	Groningen
+1952	Midden-Groningen	Groningen
+1954	Beekdaelen	Limburg
+1955	Montferland	Gelderland
+1959	Altena	Noord-Brabant
+1960	West Betuwe	Gelderland
+1961	Vijfheerenlanden	Utrecht
+1963	Hoeksche Waard	Zuid-Holland
+1966	Het Hogeland	Groningen
+1969	Westerkwartier	Groningen
+1970	Noardeast-Fryslân	Fryslân
+1978	Molenlanden	Zuid-Holland
+1979	Eemsdelta	Groningen
+1980	Dijk en Waard	Noord-Holland
+1982	Land van Cuijk	Noord-Brabant
+1991	Maashorst	Noord-Brabant
+1992	Voorne aan Zee	Zuid-Holland

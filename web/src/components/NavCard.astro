@@ -1,0 +1,60 @@
+---
+// A linked card with an icon, title and short text, as on Mintlify landing pages.
+import { Icon } from '@astrojs/starlight/components';
+import type { ComponentProps } from 'astro/types';
+import { withBase } from '../base';
+
+interface Props {
+	title: string;
+	href: string;
+	icon: ComponentProps<typeof Icon>['name'];
+}
+
+const { title, href, icon } = Astro.props;
+---
+
+<a class="nav-card not-content" href={withBase(href)}>
+	<span class="icon"><Icon name={icon} size="1.25rem" /></span>
+	<span class="title">{title}</span>
+	<span class="body"><slot /></span>
+</a>
+
+<style>
+	.nav-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 1.25rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 1rem;
+		text-decoration: none;
+		background: var(--sl-color-bg);
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	.nav-card:hover {
+		border-color: var(--sl-color-accent);
+		box-shadow: 0 0 0 1px var(--sl-color-accent);
+	}
+	.icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		margin-bottom: 0.5rem;
+		border-radius: 0.625rem;
+		color: var(--sl-color-text-accent);
+		background: var(--sl-color-accent-low);
+	}
+	.title {
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+	.body {
+		font-size: var(--sl-text-sm);
+		line-height: 1.55;
+		color: var(--sl-color-gray-3);
+	}
+</style>

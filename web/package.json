@@ -1,0 +1,42 @@
+{
+	"name": "bagkit-docs",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "node scripts/build.mjs",
+		"preview": "astro preview",
+		"astro": "astro",
+		"format": "oxfmt",
+		"format:check": "oxfmt --check",
+		"lint": "oxlint --deny-warnings",
+		"typecheck": "astro check",
+		"a11y": "node scripts/a11y.mjs",
+		"og": "node scripts/og.mjs"
+	},
+	"dependencies": {
+		"@astrojs/markdown-satteri": "^0.4.3",
+		"@astrojs/starlight": "^0.42.6",
+		"astro": "^7.2.10",
+		"satteri": "^0.10.5",
+		"sharp": "^0.35.3"
+	},
+	"devDependencies": {
+		"@astrojs/check": "0.9.10",
+		"axe-core": "4.13.0",
+		"oxfmt": "0.70.0",
+		"oxlint": "1.85.0",
+		"playwright": "1.63.0",
+		"typescript": "6.0.3"
+	},
+	"overrides": {
+		"postcss-nested": {
+			"postcss-selector-parser": "7.1.6"
+		}
+	},
+	"allowScripts": {
+		"fsevents": false
+	}
+}

@@ -1,0 +1,606 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "bagkit",
+		"version": "1.0.0",
+		"description": "Zoek adressen in een momentopname van de Basisregistratie Adressen en Gebouwen (BAG) die `bagkit serve` aanbiedt: op postcode en huisnummer, op identificatie, of het dichtstbijzijnde bij een punt.\n\nDe API volgt de NLGov REST API Design Rules 2.2 en de Geospatial-module 1.0. Namen volgen de BAG en de BAG API Individuele Bevragingen van het Kadaster; waarden zoals statussen en gebruiksdoelen staan er zoals de BAG ze vastlegt.\n\nElk antwoord bevat `API-Version`. Fouten zijn problem details (RFC 9457).",
+		"contact": {
+			"name": "bagkit",
+			"url": "https://github.com/dstotijn/bagkit/issues",
+			"email": "dstotijn@gmail.com"
+		},
+		"license": {
+			"name": "MIT",
+			"url": "https://github.com/dstotijn/bagkit/blob/main/LICENSE"
+		}
+	},
+	"servers": [
+		{
+			"url": "/v1",
+			"description": "De server waarvan deze beschrijving komt"
+		}
+	],
+	"tags": [
+		{
+			"name": "Adressen",
+			"description": "Actuele adressen en de adresseerbare objecten waartoe ze behoren."
+		},
+		{
+			"name": "Dienst",
+			"description": "Wat de server aanbiedt."
+		}
+	],
+	"paths": {
+		"/": {
+			"get": {
+				"tags": ["Dienst"],
+				"operationId": "getRoot",
+				"summary": "Beschrijf de dienst",
+				"description": "De API-versie, de momentopname die de server leest, en een verwijzing naar deze beschrijving.",
+				"responses": {
+					"200": {
+						"description": "De beschrijving van de dienst.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/Root" }
+							}
+						}
+					},
+					"404": { "$ref": "#/components/responses/NotFound" },
+					"406": { "$ref": "#/components/responses/NotAcceptable" },
+					"500": { "$ref": "#/components/responses/InternalServerError" },
+					"503": { "$ref": "#/components/responses/ServiceUnavailable" }
+				}
+			}
+		},
+		"/openapi.json": {
+			"get": {
+				"tags": ["Dienst"],
+				"operationId": "getOpenApi",
+				"summary": "Haal deze OpenAPI-beschrijving op",
+				"responses": {
+					"200": {
+						"description": "Deze OpenAPI-beschrijving, in JSON.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "type": "object" }
+							}
+						}
+					},
+					"406": { "$ref": "#/components/responses/NotAcceptable" }
+				}
+			}
+		},
+		"/crss": {
+			"get": {
+				"tags": ["Dienst"],
+				"operationId": "listCrss",
+				"summary": "Toon de ondersteunde coördinaatreferentiesystemen",
+				"description": "De CRS'en die `crs` en `puntCrs` accepteren, en het CRS waarin de database punten opslaat.",
+				"responses": {
+					"200": {
+						"description": "De ondersteunde CRS'en.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/Crss" }
+							}
+						}
+					},
+					"406": { "$ref": "#/components/responses/NotAcceptable" },
+					"500": { "$ref": "#/components/responses/InternalServerError" },
+					"503": { "$ref": "#/components/responses/ServiceUnavailable" }
+				}
+			}
+		},
+		"/adressen": {
+			"get": {
+				"tags": ["Adressen"],
+				"operationId": "zoekAdressen",
+				"summary": "Zoek adressen op postcode en huisnummer",
+				"description": "Actuele adressen met een postcode, zonder ingetrokken nummeraanduidingen, op volgorde van huisnummer, huisletter, huisnummertoevoeging en identificatie. `huisnummer`, `huisletter` en `huisnummertoevoeging` beperken het resultaat; met `exacteMatch=true` betekent een weggelaten huisletter of huisnummertoevoeging dat het adres er geen heeft. Huisletters en huisnummertoevoegingen worden zonder onderscheid tussen hoofd- en kleine letters vergeleken.",
+				"parameters": [
+					{ "$ref": "#/components/parameters/postcode" },
+					{ "$ref": "#/components/parameters/huisnummer" },
+					{ "$ref": "#/components/parameters/huisletter" },
+					{ "$ref": "#/components/parameters/huisnummertoevoeging" },
+					{ "$ref": "#/components/parameters/exacteMatch" },
+					{ "$ref": "#/components/parameters/crs" }
+				],
+				"responses": {
+					"200": {
+						"description": "De gevonden adressen; een lege lijst als niets overeenkomt.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" },
+							"Content-Crs": { "$ref": "#/components/headers/Content-Crs" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/AdresCollectie" }
+							}
+						}
+					},
+					"400": { "$ref": "#/components/responses/BadRequest" },
+					"406": { "$ref": "#/components/responses/NotAcceptable" },
+					"500": { "$ref": "#/components/responses/InternalServerError" },
+					"503": { "$ref": "#/components/responses/ServiceUnavailable" }
+				}
+			}
+		},
+		"/adressen/_dichtstbij": {
+			"get": {
+				"tags": ["Adressen"],
+				"operationId": "zoekDichtstbijzijndeAdressen",
+				"summary": "Zoek de adressen het dichtst bij een punt",
+				"description": "De actuele adressen van het adresseerbaar object dat het dichtst bij een punt ligt, het hoofdadres eerst, elk met zijn `afstand`. De zoektocht groeit van 100 m tot 25,6 km, dus een punt verder van elk adres, of buiten Nederland, vindt niets. Ligplaatsen en standplaatsen tellen mee naast verblijfsobjecten; bij gelijke afstand wint de kleinste identificatie.\n\nEen adreslijst heeft geen ruimtelijke index en antwoordt met 501.",
+				"parameters": [
+					{ "$ref": "#/components/parameters/punt" },
+					{ "$ref": "#/components/parameters/puntCrs" },
+					{ "$ref": "#/components/parameters/crs" }
+				],
+				"responses": {
+					"200": {
+						"description": "De adressen van het dichtstbijzijnde object; een lege lijst als geen object binnen bereik ligt.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" },
+							"Content-Crs": { "$ref": "#/components/headers/Content-Crs" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/AdresCollectie" }
+							}
+						}
+					},
+					"400": { "$ref": "#/components/responses/BadRequest" },
+					"406": { "$ref": "#/components/responses/NotAcceptable" },
+					"500": { "$ref": "#/components/responses/InternalServerError" },
+					"501": { "$ref": "#/components/responses/NotImplemented" },
+					"503": { "$ref": "#/components/responses/ServiceUnavailable" }
+				}
+			}
+		},
+		"/adressen/{nummeraanduidingIdentificatie}": {
+			"get": {
+				"tags": ["Adressen"],
+				"operationId": "raadpleegAdres",
+				"summary": "Raadpleeg een adres op identificatie",
+				"description": "Eén adres op de identificatie van zijn nummeraanduiding. Anders dan bij zoeken komt ook een ingetrokken nummeraanduiding terug; haar `status` zegt dat.",
+				"parameters": [
+					{
+						"name": "nummeraanduidingIdentificatie",
+						"in": "path",
+						"required": true,
+						"description": "De identificatie van de nummeraanduiding.",
+						"schema": { "type": "string", "pattern": "^[0-9]{16}$" },
+						"example": "0003200000137381"
+					},
+					{ "$ref": "#/components/parameters/crs" }
+				],
+				"responses": {
+					"200": {
+						"description": "Het adres.",
+						"headers": {
+							"API-Version": { "$ref": "#/components/headers/API-Version" },
+							"Content-Crs": { "$ref": "#/components/headers/Content-Crs" }
+						},
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/Adres" }
+							}
+						}
+					},
+					"400": { "$ref": "#/components/responses/BadRequest" },
+					"404": { "$ref": "#/components/responses/NotFound" },
+					"406": { "$ref": "#/components/responses/NotAcceptable" },
+					"500": { "$ref": "#/components/responses/InternalServerError" },
+					"503": { "$ref": "#/components/responses/ServiceUnavailable" }
+				}
+			}
+		}
+	},
+	"components": {
+		"parameters": {
+			"postcode": {
+				"name": "postcode",
+				"in": "query",
+				"required": true,
+				"description": "Vier cijfers, waarvan het eerste geen 0 is, en twee letters, zonder spatie. De letters mogen klein zijn.",
+				"schema": { "type": "string", "pattern": "^[1-9][0-9]{3}[A-Za-z]{2}$" },
+				"example": "9902HA"
+			},
+			"huisnummer": {
+				"name": "huisnummer",
+				"in": "query",
+				"description": "Het huisnummer.",
+				"schema": { "type": "integer", "minimum": 1, "maximum": 99999 },
+				"example": 1
+			},
+			"huisletter": {
+				"name": "huisletter",
+				"in": "query",
+				"description": "De huisletter, vergeleken zonder onderscheid tussen hoofd- en kleine letters.",
+				"schema": { "type": "string", "pattern": "^[A-Za-z]$" },
+				"example": "A"
+			},
+			"huisnummertoevoeging": {
+				"name": "huisnummertoevoeging",
+				"in": "query",
+				"description": "De huisnummertoevoeging, vergeleken zonder onderscheid tussen hoofd- en kleine letters.",
+				"schema": { "type": "string", "pattern": "^[0-9A-Za-z]{1,4}$" },
+				"example": "2"
+			},
+			"exacteMatch": {
+				"name": "exacteMatch",
+				"in": "query",
+				"description": "Of een weggelaten huisletter of huisnummertoevoeging betekent dat het adres er geen heeft, zodat de vraag precies één adres aanwijst. Vereist `huisnummer`.",
+				"schema": { "type": "boolean", "default": false },
+				"example": true
+			},
+			"crs": {
+				"name": "crs",
+				"in": "query",
+				"description": "Het CRS van de geometrie in het antwoord: WGS84-lengte- en breedtegraad (CRS84, de standaard) of RD New (EPSG:28992). `Content-Crs` herhaalt het.",
+				"schema": { "$ref": "#/components/schemas/CrsUri" }
+			},
+			"punt": {
+				"name": "punt",
+				"in": "query",
+				"required": true,
+				"description": "Twee decimale getallen, gescheiden door een komma, in `puntCrs`: lengte- en breedtegraad in CRS84, of x en y in meters in RD New.",
+				"schema": { "type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?,-?[0-9]+(\\.[0-9]+)?$" },
+				"example": "6.86877201,53.31933815"
+			},
+			"puntCrs": {
+				"name": "puntCrs",
+				"in": "query",
+				"description": "Het CRS van `punt`; CRS84 als het ontbreekt.",
+				"schema": { "$ref": "#/components/schemas/CrsUri" }
+			}
+		},
+		"headers": {
+			"API-Version": {
+				"description": "De volledige API-versie.",
+				"schema": { "type": "string", "example": "1.0.0" }
+			},
+			"Content-Crs": {
+				"description": "Het CRS van de geometrie in het antwoord, als URI tussen punthaken.",
+				"schema": {
+					"type": "string",
+					"example": "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>"
+				}
+			}
+		},
+		"responses": {
+			"BadRequest": {
+				"description": "Een parameter ontbreekt, is onbekend, is herhaald of is ongeldig. `invalidParams` noemt elk probleem.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" },
+						"example": {
+							"status": 400,
+							"title": "Ongeldige aanvraag",
+							"detail": "ongeldige parameters: postcode",
+							"invalidParams": [
+								{
+									"name": "postcode",
+									"code": "invalid",
+									"reason": "moet bestaan uit vier cijfers, waarvan het eerste geen 0 is, en twee letters, zoals 7311KZ"
+								}
+							]
+						}
+					}
+				}
+			},
+			"NotFound": {
+				"description": "Het pad is geen resource, of geen nummeraanduiding heeft de identificatie.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" }
+					}
+				}
+			},
+			"NotAcceptable": {
+				"description": "`Accept` sluit `application/json` uit.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" }
+					}
+				}
+			},
+			"InternalServerError": {
+				"description": "De zoekopdracht mislukte; de server logt waarom.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" }
+					}
+				}
+			},
+			"NotImplemented": {
+				"description": "De server leest een adreslijst, die geen ruimtelijke index heeft.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" }
+					}
+				}
+			},
+			"ServiceUnavailable": {
+				"description": "De databasewerkers zijn niet beschikbaar, bijvoorbeeld terwijl de server stopt.",
+				"headers": {
+					"API-Version": { "$ref": "#/components/headers/API-Version" }
+				},
+				"content": {
+					"application/problem+json": {
+						"schema": { "$ref": "#/components/schemas/Problem" }
+					}
+				}
+			}
+		},
+		"schemas": {
+			"Problem": {
+				"type": "object",
+				"description": "Problem details (RFC 9457).",
+				"required": ["status", "title", "detail"],
+				"properties": {
+					"status": { "type": "integer", "description": "De HTTP-statuscode." },
+					"title": { "type": "string", "description": "De betekenis van de statuscode." },
+					"detail": { "type": "string", "description": "Wat er met deze aanvraag misging." },
+					"invalidParams": {
+						"type": "array",
+						"description": "Elke afgewezen parameter, bij 400.",
+						"items": { "$ref": "#/components/schemas/InvalidParam" }
+					}
+				}
+			},
+			"InvalidParam": {
+				"type": "object",
+				"required": ["name", "code", "reason"],
+				"properties": {
+					"name": { "type": "string", "description": "De naam van de parameter." },
+					"code": {
+						"type": "string",
+						"enum": ["required", "invalid", "repeated", "unknown", "conflict"],
+						"description": "`required`: ontbreekt. `invalid`: de waarde is niet toegestaan. `repeated`: meer dan eens opgegeven. `unknown`: geen parameter van de resource. `conflict`: past niet bij een andere parameter."
+					},
+					"reason": { "type": "string", "description": "Waarom, voor mensen." }
+				}
+			},
+			"Link": {
+				"type": "object",
+				"required": ["rel", "href"],
+				"properties": {
+					"rel": { "type": "string" },
+					"href": { "type": "string" },
+					"type": { "type": "string" }
+				}
+			},
+			"Root": {
+				"type": "object",
+				"required": ["titel", "beschrijving", "versie", "dataset", "links"],
+				"properties": {
+					"titel": { "type": "string", "example": "bagkit" },
+					"beschrijving": { "type": "string" },
+					"versie": { "type": "string", "description": "De volledige API-versie.", "example": "1.0.0" },
+					"dataset": {
+						"type": "object",
+						"description": "De momentopname die de server leest.",
+						"required": ["indeling", "peildatum", "extractdatum"],
+						"properties": {
+							"indeling": {
+								"type": "string",
+								"enum": ["tabellen", "adreslijst"],
+								"description": "Een database met tabellen, of een adreslijst, die alleen adressen zoekt en op identificatie raadpleegt."
+							},
+							"peildatum": {
+								"type": "string",
+								"format": "date",
+								"nullable": true,
+								"description": "De datum waarop de momentopname de BAG beschrijft."
+							},
+							"extractdatum": {
+								"type": "string",
+								"format": "date",
+								"nullable": true,
+								"description": "De datum van het extract (StandTechnischeDatum), als de invoer die vermeldde."
+							}
+						}
+					},
+					"links": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/Link" }
+					}
+				}
+			},
+			"CrsUri": {
+				"type": "string",
+				"enum": [
+					"http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+					"http://www.opengis.net/def/crs/EPSG/0/28992"
+				],
+				"default": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+			},
+			"Crss": {
+				"type": "object",
+				"required": ["crs", "storageCrs"],
+				"properties": {
+					"crs": {
+						"type": "array",
+						"description": "De ondersteunde CRS'en, de standaard eerst.",
+						"items": { "$ref": "#/components/schemas/CrsUri" }
+					},
+					"storageCrs": {
+						"allOf": [{ "$ref": "#/components/schemas/CrsUri" }],
+						"description": "Het CRS waarin de database punten opslaat: RD New in een database met tabellen, CRS84 in een adreslijst."
+					}
+				}
+			},
+			"PuntGeometrie": {
+				"type": "object",
+				"description": "Een GeoJSON Point in het gevraagde CRS: lengte- en breedtegraad op 8 decimalen in CRS84, x en y in meters op 3 decimalen in RD New.",
+				"required": ["type", "coordinates"],
+				"properties": {
+					"type": { "type": "string", "enum": ["Point"] },
+					"coordinates": {
+						"type": "array",
+						"minItems": 2,
+						"maxItems": 2,
+						"items": { "type": "number" }
+					}
+				}
+			},
+			"AdresCollectie": {
+				"type": "object",
+				"required": ["adressen"],
+				"properties": {
+					"adressen": {
+						"type": "array",
+						"items": { "$ref": "#/components/schemas/Adres" }
+					}
+				},
+				"example": {
+					"adressen": [
+						{
+							"nummeraanduidingIdentificatie": "0003200000137381",
+							"postcode": "9902HA",
+							"huisnummer": 1,
+							"huisletter": null,
+							"huisnummertoevoeging": null,
+							"openbareRuimteNaam": "Abel Eppensstraat",
+							"openbareRuimteIdentificatie": "0003300000116985",
+							"woonplaatsNaam": "Appingedam",
+							"woonplaatsIdentificatie": "3386",
+							"gemeenteNaam": "Eemsdelta",
+							"provincieNaam": "Groningen",
+							"status": "Naamgeving uitgegeven",
+							"indicatieNevenadres": false,
+							"adresseerbaarObject": {
+								"identificatie": "0003010000129210",
+								"type": "Verblijfsobject",
+								"status": "Verblijfsobject in gebruik",
+								"gebruiksdoelen": ["woonfunctie"],
+								"oppervlakte": 118,
+								"geometrie": { "type": "Point", "coordinates": [6.86877201, 53.31933815] },
+								"panden": [{ "identificatie": "0003100000119616", "oorspronkelijkBouwjaar": 1960, "status": "Pand in gebruik" }]
+							}
+						}
+					]
+				}
+			},
+			"Adres": {
+				"type": "object",
+				"description": "Een adres: een nummeraanduiding met de naam van haar openbare ruimte, haar woonplaats en het adresseerbaar object waartoe ze behoort. Velden die een adreslijst niet bevat, ontbreken als de server een adreslijst leest; `null` betekent dat de BAG geen waarde heeft.",
+				"required": [
+					"nummeraanduidingIdentificatie",
+					"postcode",
+					"huisnummer",
+					"huisletter",
+					"huisnummertoevoeging",
+					"openbareRuimteNaam",
+					"openbareRuimteIdentificatie",
+					"woonplaatsNaam",
+					"gemeenteNaam",
+					"provincieNaam",
+					"adresseerbaarObject"
+				],
+				"properties": {
+					"nummeraanduidingIdentificatie": { "type": "string", "pattern": "^[0-9]{16}$" },
+					"postcode": { "type": "string", "nullable": true, "example": "9902HA" },
+					"huisnummer": { "type": "integer", "example": 1 },
+					"huisletter": { "type": "string", "nullable": true },
+					"huisnummertoevoeging": { "type": "string", "nullable": true },
+					"openbareRuimteNaam": { "type": "string", "description": "De naam van de openbare ruimte waaraan de nummeraanduiding ligt." },
+					"openbareRuimteIdentificatie": { "type": "string", "pattern": "^[0-9]{16}$" },
+					"woonplaatsNaam": { "type": "string", "description": "De woonplaats van het adres: die van de nummeraanduiding zelf, of anders die van haar openbare ruimte." },
+					"woonplaatsIdentificatie": {
+						"type": "string",
+						"pattern": "^[0-9]{4}$",
+						"description": "De woonplaatscode. Ontbreekt bij een adreslijst."
+					},
+					"gemeenteNaam": { "type": "string", "nullable": true, "description": "De gemeente van de woonplaats; `null` als het extract de woonplaats niet aan een gemeente koppelde." },
+					"provincieNaam": { "type": "string", "nullable": true },
+					"status": {
+						"type": "string",
+						"enum": ["Naamgeving uitgegeven", "Naamgeving ingetrokken"],
+						"description": "De status van de nummeraanduiding. Alleen raadplegen op identificatie geeft ingetrokken nummeraanduidingen. Ontbreekt bij een adreslijst."
+					},
+					"indicatieNevenadres": {
+						"type": "boolean",
+						"description": "Of het adres een nevenadres van het adresseerbaar object is in plaats van zijn hoofdadres. Ontbreekt zonder adresseerbaar object en bij een adreslijst."
+					},
+					"adresseerbaarObject": {
+						"type": "object",
+						"nullable": true,
+						"allOf": [{ "$ref": "#/components/schemas/AdresseerbaarObject" }],
+						"description": "Het object waartoe het adres behoort; `null` als er geen is."
+					},
+					"afstand": {
+						"type": "number",
+						"description": "Meters in RD New van het gevraagde punt tot het punt van het object, op 3 decimalen. Alleen bij zoeken op afstand."
+					}
+				}
+			},
+			"AdresseerbaarObject": {
+				"type": "object",
+				"description": "Een verblijfsobject, ligplaats of standplaats. Bij een adreslijst alleen `type` en `geometrie`.",
+				"required": ["type", "geometrie"],
+				"properties": {
+					"identificatie": { "type": "string", "pattern": "^[0-9]{16}$" },
+					"type": { "type": "string", "enum": ["Verblijfsobject", "Ligplaats", "Standplaats"] },
+					"status": { "type": "string", "description": "De BAG-status, zoals `Verblijfsobject in gebruik`." },
+					"gebruiksdoelen": {
+						"type": "array",
+						"description": "De gebruiksdoelen op alfabetische volgorde, zoals `woonfunctie`; leeg voor ligplaatsen en standplaatsen.",
+						"items": { "type": "string" }
+					},
+					"oppervlakte": {
+						"type": "integer",
+						"nullable": true,
+						"description": "De gebruiksoppervlakte in gehele vierkante meters, voor verblijfsobjecten."
+					},
+					"geometrie": {
+						"type": "object",
+						"nullable": true,
+						"allOf": [{ "$ref": "#/components/schemas/PuntGeometrie" }],
+						"description": "Het punt van het object: het punt uit de BAG, of anders het zwaartepunt van zijn vlak. `null` in CRS84 buiten het geldigheidsgebied van RD New."
+					},
+					"panden": {
+						"type": "array",
+						"description": "De panden waarvan het verblijfsobject deel uitmaakt.",
+						"items": { "$ref": "#/components/schemas/Pand" }
+					}
+				}
+			},
+			"Pand": {
+				"type": "object",
+				"required": ["identificatie", "oorspronkelijkBouwjaar", "status"],
+				"properties": {
+					"identificatie": { "type": "string", "pattern": "^[0-9]{16}$" },
+					"oorspronkelijkBouwjaar": { "type": "integer" },
+					"status": { "type": "string", "example": "Pand in gebruik" }
+				}
+			}
+		}
+	}
+}

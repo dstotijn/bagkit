@@ -1,0 +1,58 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - web/**
+      - examples/**
+      - scripts/check_docs_links.py
+      - mise.toml
+      - install.sh
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Starlight dates each page's "Last updated" from its Git history.
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: node python
+
+      # The public URL: https://dstotijn.github.io/bagkit, or the custom domain once one is set.
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Build the site and check its links
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: mise run docs:build && mise exec -- python scripts/check_docs_links.py web/dist
+
+      # Served at /install.sh, for: curl -fsSL https://dstotijn.github.io/bagkit/install.sh | sh
+      - name: Add the install script
+        run: cp install.sh web/dist/
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: web/dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

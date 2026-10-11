@@ -1,0 +1,42 @@
+# cargo-deny configuration: run `cargo deny check` (pinned in mise.toml).
+
+[graph]
+all-features = true
+
+[advisories]
+# Fail on any RustSec advisory: vulnerabilities, unmaintained and unsound crates.
+ignore = [
+    # Both are fixed in quick-xml 0.41. bagkit uses neither affected API: src/xml.rs reads with
+    # the plain Reader, not NsReader, and parses attributes itself instead of calling
+    # BytesStart::attributes(). Remove these when quick-xml is upgraded.
+    { id = "RUSTSEC-2026-0194", reason = "BytesStart::attributes() is not used" },
+    { id = "RUSTSEC-2026-0195", reason = "NsReader is not used" },
+]
+
+[licenses]
+# Permissive licenses compatible with distributing bagkit under MIT.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSL-1.0",
+    # tiny-keccak, through parquet -> ahash -> const-random.
+    "CC0-1.0",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "MIT",
+    "MPL-2.0",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "allow"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

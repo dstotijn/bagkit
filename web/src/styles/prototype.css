@@ -1,0 +1,717 @@
+/* Prototype theme: black and white with one strong blue, square hairline boxes, small pill
+   buttons and mono labels, set in Inter and Paper Mono. Loaded after theme.css and overrides
+   it. */
+
+/* Paper Mono 1.000 from its official release (public/fonts, SIL Open Font License,
+   PaperMono-LICENSE.txt). It is newer than the two weeks the site's pinning rule asks for,
+   chosen on request. */
+@font-face {
+	font-family: 'Paper Mono';
+	font-style: normal;
+	font-weight: 100 800;
+	font-display: swap;
+	src: url('/fonts/PaperMono-Variable.woff2') format('woff2');
+}
+
+:root {
+	--sl-font-mono: 'Paper Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	--sl-text-h1: 3rem;
+	/* The box behind the wordmark and the headline, the same in both modes. */
+	--bk-blue: hsl(224, 100%, 50%);
+	--bk-radius: 0;
+	--bk-label: 0.75rem;
+}
+
+/* Dark: pure black, white text and greys. The interface is monochrome apart from one strong
+   blue for the wordmark, the feature icons and the map's packets. */
+:root {
+	--sl-color-accent-low: hsl(0, 0%, 10%);
+	--sl-color-accent: hsl(0, 0%, 100%);
+	--sl-color-accent-high: hsl(0, 0%, 100%);
+	--sl-color-text-accent: hsl(0, 0%, 100%);
+	--bk-glow: hsl(220, 100%, 62%);
+	--sl-color-white: hsl(0, 0%, 100%);
+	--sl-color-gray-1: hsl(0, 0%, 90%);
+	--sl-color-gray-2: hsl(0, 0%, 78%);
+	--sl-color-gray-3: hsl(0, 0%, 60%);
+	--sl-color-gray-4: hsl(0, 0%, 40%);
+	--sl-color-gray-5: hsl(0, 0%, 18%);
+	--sl-color-gray-6: hsl(0, 0%, 8%);
+	--sl-color-black: hsl(0, 0%, 0%);
+	--sl-color-bg-nav: hsl(0, 0%, 0%);
+	--sl-color-bg-sidebar: hsl(0, 0%, 0%);
+	--sl-color-hairline-light: hsl(0, 0%, 17%);
+	--sl-color-hairline: hsl(0, 0%, 14%);
+	--bk-pill-bg: hsl(0, 0%, 95%);
+	--bk-pill-text: hsl(0, 0%, 0%);
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: hsl(0, 0%, 94%);
+	--sl-color-accent: hsl(0, 0%, 0%);
+	--sl-color-accent-high: hsl(0, 0%, 0%);
+	--sl-color-text-accent: hsl(0, 0%, 0%);
+	--bk-glow: hsl(224, 100%, 45%);
+	--sl-color-white: hsl(0, 0%, 0%);
+	--sl-color-gray-1: hsl(0, 0%, 12%);
+	--sl-color-gray-2: hsl(0, 0%, 24%);
+	--sl-color-gray-3: hsl(0, 0%, 40%);
+	--sl-color-gray-4: hsl(0, 0%, 58%);
+	--sl-color-gray-5: hsl(0, 0%, 86%);
+	--sl-color-gray-6: hsl(0, 0%, 96%);
+	--sl-color-gray-7: hsl(0, 0%, 98%);
+	--sl-color-black: hsl(0, 0%, 100%);
+	--sl-color-bg-nav: hsl(0, 0%, 100%);
+	--sl-color-bg-sidebar: hsl(0, 0%, 100%);
+	--sl-color-hairline-light: hsl(0, 0%, 88%);
+	--sl-color-hairline: hsl(0, 0%, 91%);
+	--bk-pill-bg: hsl(0, 0%, 0%);
+	--bk-pill-text: hsl(0, 0%, 100%);
+}
+
+/* Headings: medium weight and set tight. */
+h1,
+h2,
+h3,
+h4,
+.sl-markdown-content :is(h2, h3, h4),
+.page-title h1 {
+	font-weight: 500;
+	letter-spacing: -0.03em;
+}
+
+.sl-markdown-content {
+	color: var(--sl-color-gray-2);
+}
+
+/* The table of contents heading like the sidebar's section titles: Inter semibold in the text
+   colour. */
+starlight-toc h2,
+mobile-starlight-toc h2 {
+	font-family: var(--sl-font);
+	font-size: var(--sl-text-sm);
+	font-weight: 600;
+	letter-spacing: 0;
+	color: var(--sl-color-white);
+}
+
+/* Header: solid, with a hairline. */
+header.header {
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+/* The wordmark and the landing page headline are set in Paper Mono. */
+.site-title {
+	font-family: var(--sl-font-mono);
+	font-size: 1.375rem;
+}
+
+/* The wordmark and the landing page headline: the same white italic letters in the same blue
+   box, the wordmark only smaller. Padding is in em, so it scales with the text. Paper Mono has no
+   italic, so the browser slants the upright letters. */
+.site-title span,
+.hero h1 {
+	padding: 0.04em 0.2em 0.1em;
+	background: var(--bk-blue);
+	color: hsl(0, 0%, 100%);
+	font-family: var(--sl-font-mono);
+	font-style: italic;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: -0.04em;
+}
+
+.site-title img {
+	border-radius: 0;
+}
+
+/* Sidebar: no pills or bullets; the current page is blue and a little heavier. */
+.sidebar-content a {
+	border-radius: 0;
+	padding-inline: 0.75rem;
+}
+
+.sidebar-content a:hover {
+	background: transparent;
+}
+
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover {
+	color: var(--bk-glow);
+	background: transparent;
+	font-weight: 500;
+}
+
+/* Square corners everywhere except pills. */
+.sl-markdown-content .table-scroll,
+.sl-markdown-content :not(pre) > code,
+.starlight-aside,
+.card,
+.sl-link-card,
+.pagination-links a,
+.nav-card,
+.nav-card .icon,
+.expressive-code .frame,
+.expressive-code pre,
+.hero-terminal {
+	border-radius: var(--bk-radius) !important;
+}
+
+.expressive-code {
+	--ec-brdRad: 0;
+}
+
+/* Callouts: a hairline box with a coloured edge, no tint. */
+.starlight-aside {
+	border: 1px solid var(--sl-color-hairline-light);
+	border-inline-start: 2px solid var(--sl-color-gray-3);
+	background: transparent;
+}
+
+.starlight-aside--note,
+.starlight-aside--tip,
+.starlight-aside--caution,
+.starlight-aside--danger {
+	background: transparent;
+}
+
+/* Callout titles and icons in the text colour rather than Starlight's purple, green, amber and
+   red; the edge says the kind: blue for tips, grey for notes, the text colour for warnings. */
+.starlight-aside .starlight-aside__title {
+	color: var(--sl-color-white);
+}
+
+.starlight-aside--tip {
+	border-inline-start-color: var(--bk-glow);
+}
+
+.starlight-aside--caution,
+.starlight-aside--danger {
+	border-inline-start-color: var(--sl-color-white);
+}
+
+/* Buttons: small pills, inverse of the page. */
+.sl-link-button.primary,
+.hero .actions .primary {
+	padding: 0.5rem 1rem;
+	border: 0;
+	border-radius: 999px;
+	background: var(--bk-pill-bg);
+	color: var(--bk-pill-text);
+	font-size: var(--sl-text-base);
+	font-weight: 500;
+}
+
+.sl-link-button.primary:hover {
+	opacity: 0.85;
+}
+
+.sl-link-button.minimal {
+	padding-inline: 0.5rem;
+	font-size: var(--sl-text-base);
+	font-weight: 500;
+}
+
+.sl-link-button svg {
+	width: 0.9em;
+	height: 0.9em;
+}
+
+/* Search: a pill to match. */
+@media (min-width: 50rem) {
+	site-search button[data-open-modal] {
+		border-radius: 999px;
+		height: 2rem;
+	}
+}
+
+/* Landing page: a big, tight title. */
+.hero h1 {
+	/* A little more room between the headline and the tagline. */
+	margin-bottom: 0.75rem;
+	font-size: clamp(3rem, 1.75rem + 4.5vw, 5rem);
+}
+
+.hero .tagline {
+	/* A grey second line under the title, the same weight and nearly as large. */
+	font-size: clamp(1.25rem, 0.95rem + 1vw, 1.75rem);
+	font-weight: 500;
+	letter-spacing: -0.025em;
+	line-height: 1.15;
+	color: var(--sl-color-gray-3);
+}
+
+/* The map in grey, with the packets in blue. */
+.hero::before {
+	background-color: var(--sl-color-gray-3);
+}
+
+.hero::after {
+	background-color: var(--bk-glow);
+}
+
+/* Terminal: a black box with a hairline and window buttons. */
+.hero-terminal,
+:root[data-theme='light'] .hero-terminal {
+	border: 1px solid hsl(0, 0%, 20%);
+	background: color-mix(in srgb, hsl(0, 0%, 0%) 82%, transparent);
+	/* A hard shadow: a solid block offset down and to the right, without blur. */
+	box-shadow: var(--bk-shadow-offset) var(--bk-shadow-offset) 0 0 var(--bk-shadow-fill);
+	--bk-shadow-offset: 10px;
+	--bk-shadow-fill: hsl(0, 0%, 22%);
+}
+
+:root[data-theme='light'] .hero-terminal code {
+	color: hsl(0, 0%, 100%);
+}
+
+.hero-terminal b,
+:root[data-theme='light'] .hero-terminal b {
+	color: hsl(0, 0%, 55%);
+}
+
+.hero-terminal .dots i {
+	width: 0.625rem;
+	height: 0.625rem;
+	border-radius: 50%;
+}
+
+/* Window buttons in muted red, amber and green, as on macOS. */
+.hero-terminal .dots i:nth-child(1) {
+	background: hsl(4, 50%, 52%);
+}
+
+.hero-terminal .dots i:nth-child(2) {
+	background: hsl(38, 55%, 52%);
+}
+
+.hero-terminal .dots i:nth-child(3) {
+	background: hsl(125, 30%, 45%);
+}
+
+/* Feature cards: square hairline boxes, monochrome but for the icons in blue. */
+.card {
+	border-color: var(--sl-color-hairline-light);
+	--sl-card-border: var(--bk-glow);
+}
+
+.card:nth-child(n) {
+	--sl-card-border: var(--bk-glow);
+}
+
+.card .title {
+	letter-spacing: -0.03em;
+}
+
+.sl-link-card:hover,
+.nav-card:hover {
+	border-color: var(--sl-color-white);
+	box-shadow: none;
+}
+
+.nav-card .icon {
+	background: transparent;
+	color: var(--sl-color-text-accent);
+	width: auto;
+	height: auto;
+	justify-content: flex-start;
+}
+
+/* Footer: a mono line. */
+.copyright {
+	font-family: var(--sl-font-mono);
+	letter-spacing: 0.02em;
+}
+
+/* Wordmark: "bagkit" in blue, without the tile. */
+.site-title img {
+	display: none;
+}
+
+/* Landing page section headings, between the mosaics: plain Inter headings. */
+:root[data-has-hero] .sl-markdown-content h2 {
+	margin-top: 4rem;
+	font-size: var(--sl-text-h3);
+	font-weight: 500;
+}
+
+:root[data-theme='light'] .hero-terminal {
+	background: color-mix(in srgb, hsl(0, 0%, 0%) 94%, transparent);
+}
+
+/* Buttons: secondary actions as plain links. */
+
+/* Pills only as tall as their text, and links without padding. */
+.hero .actions {
+	align-items: center;
+	gap: 1rem 1.5rem;
+}
+
+.sl-link-button.primary,
+.hero .actions .primary {
+	padding: 0.375rem 0.875rem;
+	border: 0;
+	line-height: 1.15;
+}
+
+/* The landing page's buttons a size up. */
+.hero .actions .sl-link-button {
+	font-size: 1.0625rem;
+}
+
+.hero .actions .primary {
+	padding: 0.5rem 1.125rem;
+}
+
+.sl-link-button.minimal {
+	padding: 0;
+}
+
+/* Less padding in cards, which sit in the narrower content column on the landing page. */
+.card {
+	padding: 1.5rem;
+}
+
+/* The chapter above each page title as on the main theme: the sidebar group's name in the accent,
+   here blue, without a bullet. */
+.page-title .eyebrow {
+	color: var(--bk-glow);
+}
+
+/* Sidebar section titles: Inter semibold in the text colour, black in light mode. */
+.sidebar-content summary .large {
+	font-family: var(--sl-font);
+	font-size: var(--sl-text-sm);
+	font-weight: 600;
+	color: var(--sl-color-white);
+}
+
+/* An abbreviation in the tagline, written by hand there, looks like those the plugin marks. */
+.hero abbr[title] {
+	text-decoration: underline dotted;
+	text-decoration-color: var(--sl-color-gray-4);
+	text-underline-offset: 3px;
+	cursor: help;
+}
+
+/* Mosaics: card grids on the landing page (the features and the links under Start here), the
+   link cards in the documentation and the previous and next links under every page. Their tiles
+   share single hairlines, drawn by a 1px gap over a hairline background, in one column on narrow
+   screens and two from 50rem. */
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+) {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1px;
+	border: 1px solid var(--sl-color-hairline-light);
+	background: var(--sl-color-hairline-light);
+	--bk-anchor: 7px;
+	--bk-anchor-offset: -4px;
+}
+
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> * {
+	position: relative;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	background: var(--sl-color-black);
+}
+
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> a:hover,
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> .sl-link-card:hover {
+	border: 0;
+	box-shadow: none;
+	background: var(--sl-color-gray-6);
+}
+
+:root[data-has-hero] .sl-markdown-content .card-grid {
+	margin-top: 1.5rem;
+}
+
+:root[data-has-hero] .sl-markdown-content .card-grid .sl-link-card {
+	padding: 1.5rem 2rem;
+}
+
+@media (min-width: 50rem) {
+	:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	/* A lone previous or next link spans the width. */
+	:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	):has(> :only-child) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	:root[data-has-hero] .sl-markdown-content > .card-grid:first-child .card {
+		padding: 2rem;
+	}
+}
+
+/* Anchor points on the mosaics, as on a vector path in a drawing program: a small hollow square
+   centred on every corner and crossing of the hairlines. Each tile marks its own top corners; the
+   mosaic marks the bottom ones. A square is 7px and a hairline 1px, so -4px centres the square on
+   the line just outside an edge. */
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+)::before,
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+)::after,
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> *::before,
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> *::after {
+	content: '';
+	position: absolute;
+	z-index: 1;
+	box-sizing: border-box;
+	width: var(--bk-anchor);
+	height: var(--bk-anchor);
+	border: 1px solid var(--sl-color-gray-3);
+	background: var(--sl-color-black);
+}
+
+/* One column: each tile marks its top left and top right, the mosaic its bottom corners. */
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> *::before {
+	top: var(--bk-anchor-offset);
+	left: var(--bk-anchor-offset);
+}
+
+:is(
+		:root[data-has-hero] .sl-markdown-content .card-grid,
+		.sl-markdown-content .nav-cards,
+		.pagination-links
+	)
+	> *::after {
+	top: var(--bk-anchor-offset);
+	right: var(--bk-anchor-offset);
+}
+
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+)::before {
+	bottom: var(--bk-anchor-offset);
+	left: var(--bk-anchor-offset);
+}
+
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+)::after {
+	bottom: var(--bk-anchor-offset);
+	right: var(--bk-anchor-offset);
+}
+
+/* Two columns: every tile marks its top left, the right-hand tiles their top right, and the left
+   tile of the last row its bottom left. The mosaic marks the bottom middle and bottom right; the
+   middle line runs through the centre of the 1px gap, at 50%. A mosaic with a single tile keeps
+   the one-column marks. */
+@media (min-width: 50rem) {
+	:is(
+			:root[data-has-hero] .sl-markdown-content .card-grid,
+			.sl-markdown-content .nav-cards,
+			.pagination-links
+		)
+		> *::after {
+		display: none;
+	}
+
+	:is(
+			:root[data-has-hero] .sl-markdown-content .card-grid,
+			.sl-markdown-content .nav-cards,
+			.pagination-links
+		)
+		> :nth-child(2n)::after,
+	:is(
+			:root[data-has-hero] .sl-markdown-content .card-grid,
+			.sl-markdown-content .nav-cards,
+			.pagination-links
+		)
+		> :only-child::after {
+		display: block;
+	}
+
+	:is(
+			:root[data-has-hero] .sl-markdown-content .card-grid,
+			.sl-markdown-content .nav-cards,
+			.pagination-links
+		)
+		> :nth-child(odd):nth-last-child(2)::after {
+		display: block;
+		top: auto;
+		right: auto;
+		bottom: var(--bk-anchor-offset);
+		left: var(--bk-anchor-offset);
+	}
+
+	:is(
+			:root[data-has-hero] .sl-markdown-content .card-grid,
+			.sl-markdown-content .nav-cards,
+			.pagination-links
+		):not(:has(> :only-child))::before {
+		left: calc(50% - var(--bk-anchor) / 2);
+	}
+}
+
+/* The skip link as a pill, and link cards in the text colour, rather than the browser's link
+   blue. */
+.sl-skip-link {
+	border-radius: 999px;
+	background: var(--bk-pill-bg);
+	color: var(--bk-pill-text);
+}
+
+.nav-card {
+	color: inherit;
+}
+
+/* Code in headings, such as the table names on the tables reference: monospace at the heading's
+   size, without the inline code box. */
+.sl-markdown-content :is(h2, h3, h4) code {
+	padding: 0;
+	border: 0;
+	background: none;
+	font-size: 0.95em;
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	/* Long names may break on a narrow screen rather than widen the page. */
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+/* On narrow screens a size down, so the longest table name fits on one line at 320px. */
+@media (max-width: 30rem) {
+	.sl-markdown-content :is(h2, h3, h4) code {
+		font-size: 0.75em;
+	}
+}
+
+/* The landing page uses the normal layout, so it has the sidebar for the menu button. On wide
+   screens it keeps the menu button too: the sidebar stays hidden, the content takes the full width
+   as a splash page would, and the button opens the sidebar as a panel over the page. */
+:root[data-has-hero] {
+	--sl-content-width: 67.5rem;
+}
+
+@media (min-width: 50rem) {
+	:root[data-has-hero][data-has-sidebar] {
+		--sl-content-inline-start: 0rem;
+	}
+
+	:root[data-has-hero] .sidebar-pane:not(:popover-open) {
+		display: none;
+	}
+
+	:root[data-has-hero] .sl-menu-button {
+		display: flex;
+	}
+
+	/* As a panel over the page, the sidebar gets an edge. */
+	:root[data-has-hero] .sidebar-pane:popover-open {
+		border-inline-end: 1px solid var(--sl-color-hairline-light);
+	}
+
+	:root[data-has-hero][data-has-sidebar] header.header {
+		padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--bk-menu-width));
+	}
+}
+
+/* A mosaic without tiles, such as the landing page's previous and next links, is not drawn. */
+:is(
+	:root[data-has-hero] .sl-markdown-content .card-grid,
+	.sl-markdown-content .nav-cards,
+	.pagination-links
+):not(:has(> *)) {
+	display: none;
+}
+
+:root[data-theme='light'] .hero-terminal {
+	--bk-shadow-fill: hsl(0, 0%, 78%);
+}
+
+/* Paper Mono's single-storey a (cv01), to match Inter's (cv11), wherever Paper Mono is used. It
+   cannot be set on the whole page: Inter's cv01 is an alternate 1. */
+code,
+kbd,
+pre,
+samp,
+.expressive-code,
+.hero-terminal,
+.site-title,
+.hero h1,
+.copyright {
+	font-feature-settings: 'cv01';
+}
+
+/* The section in view in "On this page", blue like the current page in the sidebar. */
+starlight-toc a[aria-current='true'],
+mobile-starlight-toc a[aria-current='true'] {
+	color: var(--bk-glow);
+}
+
+/* The landing page leaves the wordmark to its hero: no logo in the top bar. Hidden rather than
+   removed, so the top bar keeps its layout. */
+:root[data-has-hero] .site-title {
+	visibility: hidden;
+}
+
+/* On narrow screens, less room above the hero. */
+@media (max-width: 49.99rem) {
+	:root[data-has-hero] main > .content-panel:first-child {
+		padding-top: 0.5rem;
+	}
+}
+
+/* No anchor link beside the landing page's headings; documentation pages keep theirs. */
+:root[data-has-hero] .sl-anchor-link {
+	display: none;
+}

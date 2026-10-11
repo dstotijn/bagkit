@@ -1,0 +1,96 @@
+---
+title: Quickstart
+description: Convert the national extract and look up an adres.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+<Steps>
+
+1. **Install bagkit** on macOS or Linux; see [Installation](/installation/) for Windows, Cargo and other options.
+
+   ```sh
+   curl -fsSL https://dstotijn.github.io/bagkit/install.sh | sh
+   ```
+
+2. **Download the national extract.** PDOK serves it as one ZIP of about 3.6 GB, linked from Kadaster's [download page](https://www.kadaster.nl/-/gratis-download-bag-extract). bagkit reads it as it is; there is no need to unpack it.
+
+   ```sh
+   curl -O https://service.pdok.nl/kadaster/adressen/atom/v1_0/downloads/lvbag-extract-nl.zip
+   ```
+
+3. **Convert it.** Without options, bagkit writes `bag.sqlite` with every current voorkomen on today's date.
+
+   ```sh
+   bagkit convert lvbag-extract-nl.zip
+   ```
+
+   When it finishes, it prints how many voorkomens it converted.
+
+4. **Look up an adres** by postcode and huisnummer:
+
+   ```sh
+   bagkit query '/v1/adressen?postcode=9902HA&huisnummer=1'
+   ```
+
+   ```json
+   {
+     "adressen": [
+       {
+         "nummeraanduidingIdentificatie": "0003200000137381",
+         "postcode": "9902HA",
+         "huisnummer": 1,
+         "huisletter": null,
+         "huisnummertoevoeging": null,
+         "openbareRuimteNaam": "Abel Eppensstraat",
+         "openbareRuimteIdentificatie": "0003300000116985",
+         "woonplaatsNaam": "Appingedam",
+         "woonplaatsIdentificatie": "3386",
+         "gemeenteNaam": "Eemsdelta",
+         "provincieNaam": "Groningen",
+         "status": "Naamgeving uitgegeven",
+         "indicatieNevenadres": false,
+         "adresseerbaarObject": {
+           "identificatie": "0003010000129210",
+           "type": "Verblijfsobject",
+           "status": "Verblijfsobject in gebruik",
+           "gebruiksdoelen": ["woonfunctie"],
+           "oppervlakte": 118,
+           "geometrie": { "type": "Point", "coordinates": [6.86877201, 53.31933815] },
+           "panden": [
+             {
+               "identificatie": "0003100000119616",
+               "oorspronkelijkBouwjaar": 1960,
+               "status": "Pand in gebruik"
+             }
+           ]
+         }
+       }
+     ]
+   }
+   ```
+
+5. **Find the nearest adres** to a point, as lengtegraad and breedtegraad:
+
+   ```sh
+   bagkit query '/v1/adressen/_dichtstbij?punt=6.86877,53.31934'
+   ```
+
+   The result is the same adres, with `"afstand": 0.246` in metres.
+
+6. **Serve the HTTP API:**
+
+   ```sh
+   bagkit serve 8080
+   curl 'http://localhost:8080/v1/adressen?postcode=9902HA&huisnummer=1'
+   ```
+
+   The server describes its API in OpenAPI at `/v1/openapi.json`.
+
+</Steps>
+
+## Next steps
+
+- [Convert to Parquet or CSV](/guides/converting/), or only the object types you need.
+- [Write an adreslijst](/guides/address-lists/) when you only need adressen.
+- [Open the output in QGIS or GeoPandas](/guides/gis/).

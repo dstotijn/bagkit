@@ -1,0 +1,63 @@
+---
+title: Using the Rust library
+description: Stream current BAG voorkomens into your own code, or run conversions from Rust.
+---
+
+import { Code } from '@astrojs/starlight/components';
+import streamLocalities from '../../../../../examples/stream_localities.rs?raw';
+import countPostcodes from '../../../../../examples/count_postcodes.rs?raw';
+import writeAddressList from '../../../../../examples/write_address_list.rs?raw';
+
+The `bagkit` command is a thin layer over the `bagkit` crate. Everything it does is available as a library, and you can plug your own code into the same parallel pipeline.
+
+```toml title="Cargo.toml"
+[dependencies]
+anyhow = "1"
+bagkit = { version = "0.1", default-features = false }
+```
+
+Without default features the crate reads extracts and writes CSV. Enable `sqlite` or `parquet` for those formats; see [crate features](/installation/#crate-features).
+
+## Stream voorkomens
+
+`Extract::for_each` calls your closure with every current voorkomen of the object types you select, in document order:
+
+<Code code={streamLocalities} lang="rust" title="examples/stream_localities.rs" />
+
+Inflating and parsing runs on every core; your closure runs on the calling thread. Only documents of the selected types are read.
+
+## Convert on worker threads
+
+For heavier work per voorkomen, implement a `Converter`. It runs on the worker threads, once per voorkomen, and emits items that arrive at your writer closure in document order:
+
+<Code code={countPostcodes} lang="rust" title="examples/count_postcodes.rs" />
+
+`State` holds per-document state, for example to batch items; `begin` creates it and `end` can flush it.
+
+:::caution[Read both parts]
+A read happens in [two parts](/concepts/architecture/#two-parts): first woonplaatsen, the relations between woonplaatsen and gemeenten, openbare ruimten and adresseerbare objecten, then nummeraanduidingen and panden. Documents are assigned to parts by name, and documents whose names name no object type are read in the first part whatever they hold. Read both parts, in order, so you see every voorkomen.
+:::
+
+## Run a conversion
+
+`convert::convert` does what `bagkit convert` does:
+
+<Code code={writeAddressList} lang="rust" title="examples/write_address_list.rs" />
+
+These examples live in the repository's `examples/` directory, where `cargo test` compiles them. Run one from a checkout of the repository:
+
+```sh
+cargo run --example stream_localities -- lvbag-extract-nl.zip 2026-10-08
+```
+
+## Modules
+
+| Module                        | Purpose                                                                                                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `extract`                     | Read the current voorkomens of selected object types in parallel                                                                                                               |
+| `xml`                         | The typed voorkomens: `Locality` (woonplaats), `PublicSpace` (openbare ruimte), `Address` (nummeraanduiding), `AddressableObject` (adresseerbaar object) and `Building` (pand) |
+| `tables`, `address_list`      | Shape voorkomens into rows                                                                                                                                                     |
+| `dataset`                     | Table definitions, values and formats                                                                                                                                          |
+| `output`, `sqlite`, `parquet` | Write rows                                                                                                                                                                     |
+| `convert`                     | Run all of the above                                                                                                                                                           |
+| `query`, `api`, `server`      | Look adressen up in SQLite output and serve the HTTP API                                                                                                                       |

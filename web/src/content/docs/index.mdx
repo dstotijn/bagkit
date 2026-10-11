@@ -1,0 +1,83 @@
+---
+title: bagkit
+# The tab would otherwise read "bagkit | bagkit".
+head:
+  - tag: title
+    content: bagkit
+description: A toolkit for the Dutch register of addresses and buildings (BAG). Convert to SQLite, CSV and Parquet. Address lookup via HTTP.
+# The normal layout, so the sidebar exists for the menu button on narrow
+# screens; on wide screens src/styles/prototype.css hides it and widens the content.
+tableOfContents: false
+prev: false
+next: false
+editUrl: false
+lastUpdated: false
+hero:
+  title: bagkit
+  tagline: >-
+    A toolkit for the Dutch register of addresses and buildings (<abbr title="Basisregistratie
+    Adressen en Gebouwen: the Dutch register of addresses and buildings">BAG</abbr>). Convert
+    to SQLite, CSV and Parquet. Address lookup via HTTP.
+  image:
+    html: |
+      <div class="hero-terminal">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <code><b>$</b> bagkit convert bag.zip <span>--output bag.sqlite</span></code>
+        <code><b>$</b> bagkit serve 8080</code>
+      </div>
+  actions:
+    - text: Get started
+      link: /quickstart/
+      icon: right-arrow
+    - text: Read the introduction
+      link: /introduction/
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { withBase } from '../../base';
+
+<CardGrid>
+  <Card title="Reads the national BAG extract" icon="document">
+    Give it the [monthly BAG extract](https://www.kadaster.nl/-/gratis-download-bag-extract) from
+    PDOK as‑is, or the XML files from it. bagkit keeps the voorkomens that are valid on a date you
+    choose, and checks identificaties and references as it goes.
+  </Card>
+  <Card title="Writes SQLite, Parquet or CSV" icon="seti:db">
+    One table per object type, or one row per address with its names and coordinates. Convert only
+    the object types you need. SQLite output is a GeoPackage, Parquet is GeoParquet.
+  </Card>
+  <Card title="Looks up addresses" icon="magnifier">
+    Find an address by postcode and house number, or the addresses nearest to a coordinate, with
+    `bagkit query` or over HTTP with `bagkit serve`.
+  </Card>
+  <Card title="Exposes a Rust library" icon="seti:rust">
+    The `bagkit` command is built on a crate you can use directly: stream typed voorkomens into your
+    own code, or write any of the outputs from it.
+  </Card>
+</CardGrid>
+
+## Start here
+
+<CardGrid>
+  <LinkCard
+    title="Quickstart"
+    description="Download the extract, convert it and look up your first address."
+    href={withBase('/quickstart/')}
+  />
+  <LinkCard
+    title="Converting extracts"
+    description="Choose a format, a shape and the object types you need."
+    href={withBase('/guides/converting/')}
+  />
+  <LinkCard
+    title="Using GIS tools"
+    description="Open the output in QGIS, GDAL or GeoPandas."
+    href={withBase('/guides/gis/')}
+  />
+  <LinkCard
+    title="Command line reference"
+    description="Every command and option."
+    href={withBase('/reference/cli/')}
+  />
+</CardGrid>

@@ -1,0 +1,37 @@
+---
+title: Address lists
+description: One row per current adres, with its openbare ruimte, woonplaats and coordinates.
+---
+
+When you only need adressen, the `addresses` shape writes the adreslijst, a single flat table, and never reads panden:
+
+```sh
+bagkit convert lvbag-extract-nl.zip --shape addresses --format csv
+```
+
+For the national extract it writes 10,076,601 rows:
+
+```csv title="adreslijst.csv"
+nummeraanduiding_identificatie,openbare_ruimte_naam,huisnummer,huisletter,huisnummertoevoeging,postcode,woonplaats_naam,gemeente_naam,provincie_naam,type_adresseerbaar_object,breedtegraad,lengtegraad,openbare_ruimte_identificatie
+0003200000137381,Abel Eppensstraat,1,,,9902HA,Appingedam,Eemsdelta,Groningen,Verblijfsobject,53.3193382,6.8687720,0003300000116985
+```
+
+## Which adressen
+
+- Every adres that is current on the [peildatum](/concepts/reference-dates/) and not ingetrokken (`Naamgeving ingetrokken`).
+- Nevenadressen too: they get the punt of the adresseerbaar object they belong to.
+- Nummeraanduidingen without an adresseerbaar object, which have an empty `type_adresseerbaar_object`, `breedtegraad` and `lengtegraad`.
+
+The woonplaats is the nummeraanduiding's own when it names one, otherwise its openbare ruimte's. The gemeente and provincie follow that woonplaats.
+
+## Formats
+
+| Format    | Output                        | Notes                                                           |
+| --------- | ----------------------------- | --------------------------------------------------------------- |
+| `csv`     | `adreslijst.csv`, 1.2 GiB     | Official identificaties, coordinates to 7 decimals (about 1 cm) |
+| `parquet` | `adreslijst.parquet`, 216 MiB | Integer identificaties, full-precision coordinates              |
+| `sqlite`  | `adreslijst.sqlite`           | An `adreslijst` table indexed by postcode and huisnummer        |
+
+A SQLite adreslijst answers address lookups with `query` and `serve`. Nearest lookups need the tables shape, because they use its spatial index; asking an adreslijst for one returns an error.
+
+See the [Address list reference](/reference/address-list/) for every column.

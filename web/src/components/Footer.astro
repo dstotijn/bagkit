@@ -1,0 +1,30 @@
+---
+// Starlight's footer (edit link, last updated, pagination), then the copyright and licence.
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Default />
+<p class="copyright">
+	© 2026 David Stotijn · <a href="https://github.com/dstotijn/bagkit/blob/main/LICENSE"
+		>MIT License</a
+	>.
+</p>
+
+<style>
+	.copyright {
+		margin: 3rem 0 1rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--sl-color-hairline);
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+		text-align: center;
+	}
+	.copyright a {
+		color: var(--sl-color-gray-2);
+		text-decoration-color: var(--sl-color-gray-4);
+		text-underline-offset: 3px;
+	}
+	.copyright a:hover {
+		color: var(--sl-color-white);
+	}
+</style>
