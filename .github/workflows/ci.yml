@@ -15,6 +15,9 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  # Tools that `mise exec` installs call the GitHub API; unauthenticated calls share a small
+  # rate limit per runner IP, which macOS runners exhaust.
+  MISE_GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
   lint:
