@@ -15,7 +15,7 @@ use serde_json::{Value as Json, json};
 /// The API version, which `info.version` in the OpenAPI description repeats. Bump it
 /// with every change to the API: the major version for incompatible ones, which also
 /// changes [`BASE_PATH`].
-pub const VERSION: &str = "1.0.0";
+pub const VERSION: &str = "1.0.1";
 
 /// Where the API lives; the major version of [`VERSION`].
 pub const BASE_PATH: &str = "/v1";

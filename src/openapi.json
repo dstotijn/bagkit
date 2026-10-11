@@ -2,7 +2,7 @@
 	"openapi": "3.0.3",
 	"info": {
 		"title": "bagkit",
-		"version": "1.0.0",
+		"version": "1.0.1",
 		"description": "Zoek adressen in een momentopname van de Basisregistratie Adressen en Gebouwen (BAG) die `bagkit serve` aanbiedt: op postcode en huisnummer, op identificatie, of het dichtstbijzijnde bij een punt.\n\nDe API volgt de NLGov REST API Design Rules 2.2 en de Geospatial-module 1.0. Namen volgen de BAG en de BAG API Individuele Bevragingen van het Kadaster; waarden zoals statussen en gebruiksdoelen staan er zoals de BAG ze vastlegt.\n\nElk antwoord bevat `API-Version`. Fouten zijn problem details (RFC 9457).",
 		"contact": {
 			"name": "bagkit",
@@ -65,7 +65,10 @@
 					"200": {
 						"description": "Deze OpenAPI-beschrijving, in JSON.",
 						"headers": {
-							"API-Version": { "$ref": "#/components/headers/API-Version" }
+							"API-Version": { "$ref": "#/components/headers/API-Version" },
+							"access-control-allow-origin": {
+								"$ref": "#/components/headers/Access-Control-Allow-Origin"
+							}
 						},
 						"content": {
 							"application/json": {
@@ -275,6 +278,13 @@
 				"schema": {
 					"type": "string",
 					"example": "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>"
+				}
+			},
+			"Access-Control-Allow-Origin": {
+				"description": "Elke webpagina mag het antwoord lezen.",
+				"schema": {
+					"type": "string",
+					"enum": ["*"]
 				}
 			}
 		},

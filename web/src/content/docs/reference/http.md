@@ -197,6 +197,7 @@ The `v1` in the path is the major version. Changes that keep existing clients wo
 
 | Version | Changes                                                                                                                                  |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0.1   | The OpenAPI description documents the `Access-Control-Allow-Origin` header on `/openapi.json`, which the API already sent.               |
 | 1.0.0   | The first versioned API, in Dutch. It replaces the unversioned paths such as `/9902HA/1` and `/53.31934/6.86877`, which no longer exist. |
 
 ## Deviations from the API Design Rules
