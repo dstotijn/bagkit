@@ -5,13 +5,7 @@ all-features = true
 
 [advisories]
 # Fail on any RustSec advisory: vulnerabilities, unmaintained and unsound crates.
-ignore = [
-    # Both are fixed in quick-xml 0.41. bagkit uses neither affected API: src/xml.rs reads with
-    # the plain Reader, not NsReader, and parses attributes itself instead of calling
-    # BytesStart::attributes(). Remove these when quick-xml is upgraded.
-    { id = "RUSTSEC-2026-0194", reason = "BytesStart::attributes() is not used" },
-    { id = "RUSTSEC-2026-0195", reason = "NsReader is not used" },
-]
+ignore = []
 
 [licenses]
 # Permissive licenses compatible with distributing bagkit under MIT.
